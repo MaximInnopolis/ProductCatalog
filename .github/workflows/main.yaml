@@ -20,23 +20,19 @@ jobs:
           go-version: 1.21
 
       - name: Dependencies
-        working-directory: ./ProductCatalog
         run: go mod download
 
       - name: Linter
-        working-directory: ./ProductCatalog
         run: go vet ./...
 
       - name: Tests
-        working-directory: ./ProductCatalog
         run: go test -v ./...
 
       - name: Build
-        working-directory: ./ProductCatalog
         run: go build -o catalog_api_server ./cmd/catalog_api_server
 
       - name: Run Migrations
-        working-directory: ./ProductCatalog/scripts/database
+        working-directory: ./scripts/database
         run: go run migrate.go
 
 #      - name: Deploy
