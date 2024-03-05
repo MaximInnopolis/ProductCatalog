@@ -32,10 +32,10 @@ func Close() error {
 	return logFile.Close()
 }
 
-func Printf(s string, v ...any) {
-	logger.Printf(s, v)
+func Printf(s string, v ...interface{}) {
+	logger.Printf(s, v...)
 }
 
-func Println(v ...any) {
-	logger.Println(v)
+func Println(v ...interface{}) {
+	logger.Println(v...)
 }
