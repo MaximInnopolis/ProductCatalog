@@ -24,15 +24,15 @@ jobs:
         run: go mod download
 
       - name: Linter
-        working-directory: ./ProductCatalog/catalog_api
+        working-directory: ./ProductCatalog
         run: go vet ./...
 
       - name: Tests
-        working-directory: ./ProductCatalog/catalog_api
+        working-directory: ./ProductCatalog
         run: go test -v ./...
 
       - name: Build
-        working-directory: ./ProductCatalog/catalog_api
+        working-directory: ./ProductCatalog
         run: go build -o catalog_api_server ./cmd/catalog_api_server
 
       - name: Run Migrations
