@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
-	//"net/http"
+	"net/http"
 
-	//"github.com/MaximInnopolis/ProductCatalog/internal/api"
+	"github.com/MaximInnopolis/ProductCatalog/internal/api"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 )
@@ -24,10 +24,9 @@ func main() {
 	}
 	defer database.Close()
 
-	//http.HandleFunc("/categories", api.ListCategoriesHandler(database.GetDB()))
-	//http.HandleFunc("/categories/", api.ListProductsInCategoryHandler(database.GetDB()))
-	//
-	//// Запуск HTTP сервера
-	//logger.Println("Server started on port 8080")
-	//log.Fatal(http.ListenAndServe(":8080", nil))
+	api.RegisterHandlers()
+
+	// HTTP server start
+	logger.Println("Server started on port 8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

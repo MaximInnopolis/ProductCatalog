@@ -44,4 +44,4 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         with:
           status: success
-          text: "CI успешно завершен"
+          text: "CI completed successfully"

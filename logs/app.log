@@ -2,3 +2,43 @@
 2024/03/05 18:16:23 logger.go:40: [Database connection closed]
 2024/03/05 19:16:46 logger.go:40: Database connection established
 2024/03/05 19:16:46 logger.go:40: Database connection closed
+2024/03/05 19:37:46 logger.go:40: Database connection established
+2024/03/05 19:37:46 logger.go:40: Server started on port 8080
+2024/03/05 19:39:21 logger.go:40: Database connection established
+2024/03/05 19:39:21 logger.go:40: Server started on port 8080
+2024/03/05 19:41:56 logger.go:40: Database connection established
+2024/03/05 19:41:56 logger.go:40: Server started on port 8080
+2024/03/05 19:58:45 logger.go:40: Database connection established
+2024/03/05 19:58:45 logger.go:40: Server started on port 8080
+2024/03/05 19:59:55 logger.go:40: Successfully entered function GetAllCategories
+2024/03/05 19:59:55 logger.go:40: Successfully got all categories
+2024/03/05 20:03:47 logger.go:40: Database connection established
+2024/03/05 20:03:47 logger.go:40: Server started on port 8080
+2024/03/05 20:10:01 logger.go:40: Table 'categories' created successfully
+2024/03/05 20:10:01 logger.go:40: Table 'products' created successfully
+2024/03/05 20:10:01 logger.go:40: Table 'users' created successfully
+2024/03/05 20:11:46 logger.go:40: Table 'categories' created successfully
+2024/03/05 20:11:46 logger.go:40: Table 'products' created successfully
+2024/03/05 20:11:46 logger.go:40: Table 'users' created successfully
+2024/03/05 20:13:51 logger.go:40: Table 'categories' created successfully
+2024/03/05 20:13:51 logger.go:40: Table 'products' created successfully
+2024/03/05 20:13:51 logger.go:40: Table 'users' created successfully
+2024/03/05 20:16:32 logger.go:40: Table 'categories' created successfully
+2024/03/05 20:16:32 logger.go:40: Table 'products' created successfully
+2024/03/05 20:16:32 logger.go:40: Table 'users' created successfully
+2024/03/05 20:20:26 logger.go:40: Database connection established
+2024/03/05 20:20:26 logger.go:40: Server started on port 8080
+2024/03/05 20:23:13 logger.go:40: Table 'categories' created successfully
+2024/03/05 20:23:13 logger.go:40: Table 'products' created successfully
+2024/03/05 20:23:13 logger.go:40: Table 'users' created successfully
+2024/03/05 20:23:44 logger.go:40: Database connection established
+2024/03/05 20:23:44 logger.go:40: Server started on port 8080
+2024/03/05 20:25:34 logger.go:40: Successfully got all categories
+2024/03/05 20:32:59 logger.go:40: Database connection established
+2024/03/05 20:32:59 logger.go:40: Server started on port 8080
+2024/03/05 20:33:26 logger.go:40: Database connection established
+2024/03/05 20:33:26 logger.go:40: Server started on port 8080
+2024/03/05 20:33:33 logger.go:40: Successfully got all categories
+2024/03/05 20:39:25 logger.go:40: Database connection established
+2024/03/05 20:39:25 logger.go:40: Server started on port 8080
+2024/03/05 20:39:34 logger.go:40: Successfully got all categories
