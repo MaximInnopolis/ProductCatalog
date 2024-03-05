@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     paths:
-      - 'catalog_api/**'
+      - 'ProductCatalog/**'
       - '.github/workflows/main.yaml'
 
 jobs:
@@ -20,14 +20,32 @@ jobs:
           go-version: 1.21
 
       - name: Dependencies
-        working-directory: ./catalog_api
+        working-directory: ./ProductCatalog/catalog_api
         run: go mod download
 
       - name: Linter
-        working-directory: ./catalog_api
+        working-directory: ./ProductCatalog/catalog_api
         run: go vet ./...
 
       - name: Tests
-        working-directory: ./catalog_api
+        working-directory: ./ProductCatalog/catalog_api
         run: go test -v ./...
 
+      - name: Build
+        working-directory: ./ProductCatalog/catalog_api
+        run: go build -o catalog_api_server ./cmd/catalog_api_server
+
+      - name: Run Migrations
+        working-directory: ./ProductCatalog/scripts/database
+        run: go run migrate.go
+
+#      - name: Deploy
+#        run: |
+
+
+      - name: Notify Success
+        if: always()
+        uses: rtCamp/action-slack-notify@v2
+        with:
+          status: success
+          text: "CI успешно завершен"
