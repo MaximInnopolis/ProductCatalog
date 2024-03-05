@@ -20,7 +20,7 @@ jobs:
           go-version: 1.21
 
       - name: Dependencies
-        working-directory: ./ProductCatalog/catalog_api
+        working-directory: ./ProductCatalog
         run: go mod download
 
       - name: Linter
