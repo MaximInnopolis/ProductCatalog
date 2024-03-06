@@ -7,6 +7,7 @@ import (
 	"github.com/MaximInnopolis/ProductCatalog/internal/api"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
+	"github.com/MaximInnopolis/ProductCatalog/scripts"
 )
 
 func main() {
@@ -23,6 +24,20 @@ func main() {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 	defer database.Close()
+
+	// Migrate
+	if err := scripts.Migrate(database.GetDB()); err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Migration completed successfully")
+
+	// Database records creation (Not necessary)
+	if err := scripts.CreateRecords(database.GetDB()); err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Records created successfully")
 
 	api.RegisterHandlers()
 

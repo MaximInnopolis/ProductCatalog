@@ -22,64 +22,14 @@ jobs:
       - name: Dependencies
         run: go mod download
 
-      - name: Build
-        run: go build -o catalog_api_server ./cmd/catalog_api_server
-
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.21
-
-      - name: Dependencies
-        run: go mod download
-
       - name: Linter
         run: go vet ./...
 
       - name: Tests
         run: go test -v ./...
 
-  migrate:
-    runs-on: ubuntu-latest
+      - name: Build
+        run: go build -o catalog_api_server ./cmd/catalog_api_server
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.21
-
-      - name: Dependencies
-        run: go mod download
-
-      - name: Run Migrations
-        working-directory: ./scripts/database
-        run: go run migrate.go
-
-  add_records:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.21
-
-      - name: Dependencies
-        run: go mod download
-
-      - name: Create Records
-        working-directory: ./scripts/database
-        run: go run create_records.go
+#      - name: Deploy
+#        run: |

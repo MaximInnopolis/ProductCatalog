@@ -1,28 +1,11 @@
-package main
+package scripts
 
 import (
 	"database/sql"
-	"log"
-
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func main() {
-	// Open database connection
-	db, err := sql.Open("sqlite3", "./data/database.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	if err := createRecords(db); err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println("Records created successfully")
-}
-
-func createRecords(db *sql.DB) error {
+func CreateRecords(db *sql.DB) error {
 	// Begin transaction
 	tx, err := db.Begin()
 	if err != nil {
@@ -37,7 +20,7 @@ func createRecords(db *sql.DB) error {
 	}()
 
 	// Insert product
-	result, err := tx.Exec("INSERT INTO products (name) VALUES (?)", "BRead")
+	result, err := tx.Exec("INSERT INTO products (name) VALUES (?) ON CONFLICT(name) DO NOTHING", "Bread")
 	if err != nil {
 		return err
 	}
@@ -47,9 +30,9 @@ func createRecords(db *sql.DB) error {
 	}
 
 	// Insert categories
-	categories := []string{"Flour"}
+	categories := []string{"Flour", "Food"}
 	for _, categoryName := range categories {
-		result, err = tx.Exec("INSERT INTO categories (name) VALUES (?)", categoryName)
+		result, err = tx.Exec("INSERT INTO categories (name) VALUES (?) ON CONFLICT(name) DO NOTHING", categoryName)
 		if err != nil {
 			return err
 		}
@@ -59,6 +42,10 @@ func createRecords(db *sql.DB) error {
 		}
 
 		// Insert into product_categories
+		if productID == 0 || categoryID == 0 {
+			return nil
+		}
+
 		_, err = tx.Exec("INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)", productID, categoryID)
 		if err != nil {
 			return err

@@ -1,34 +1,17 @@
-package main
+package scripts
 
 import (
 	"database/sql"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
-	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func main() {
-	// Open SQLite database connection
-	db, err := sql.Open("sqlite3", "./data/database.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	// Migrate
-	if err := migrate(db); err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println("Migration completed successfully")
-}
-
-func migrate(db *sql.DB) error {
+func Migrate(db *sql.DB) error {
 	_, err := db.Exec(`
         CREATE TABLE IF NOT EXISTS categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT
+            name TEXT UNIQUE 
         )
     `)
 	if err != nil {
@@ -40,7 +23,7 @@ func migrate(db *sql.DB) error {
 	_, err = db.Exec(`
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT
+            name TEXT UNIQUE 
         )
     `)
 	if err != nil {
