@@ -11,7 +11,7 @@ type Product struct {
 	Name string `json:"name"`
 }
 
-// AddProduct creates a new product in the database and associates it with the specified categories
+// AddProduct creates new product in database and associates it with specified categories
 func AddProduct(db *sql.DB, product *Product, categories []Category) error {
 	// Insert product into products table
 	query := "INSERT INTO products (name) VALUES (?)"
@@ -57,19 +57,43 @@ func AddProduct(db *sql.DB, product *Product, categories []Category) error {
 	return nil
 }
 
-// getCategoryID retrieves ID of category from database
-func getCategoryID(db *sql.DB, categoryName string) (int64, error) {
-	query := "SELECT id FROM categories WHERE name = ?"
-	row := db.QueryRow(query, categoryName)
+// DeleteProduct deletes specified product from database
+func DeleteProduct(db *sql.DB, productName string) error {
 
-	var categoryID int64
-	err := row.Scan(&categoryID)
+	// Check if product exists in database
+	productID, err := getProductID(db, productName)
 	if err != nil {
-		logger.Printf("Category %v does not exist in database yet. Creating...:", categoryName)
-		return 0, err
+		return err
 	}
 
-	return categoryID, nil
+	query := "DELETE FROM products WHERE id = ?"
+	result, err := db.Exec(query, productID)
+	if err != nil {
+		logger.Println("Error deleting product from database:", err)
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		logger.Println("Error getting rows affected:", err)
+		return err
+	}
+
+	if rowsAffected == 0 {
+		logger.Printf("Product %s not found in database", productName)
+		return errors.New("no rows affected, product not found")
+	}
+
+	// Delete associated records from 'product_categories' table
+	query = "DELETE FROM product_categories WHERE product_id = ?"
+	_, err = db.Exec(query, productID)
+	if err != nil {
+		logger.Println("Error deleting product associations from database:", err)
+		return err
+	}
+
+	logger.Println("Product deleted successfully")
+	return nil
 }
 
 func GetProductsByCategory(db *sql.DB, categoryName string) ([]string, error) {
@@ -104,4 +128,34 @@ func GetProductsByCategory(db *sql.DB, categoryName string) ([]string, error) {
 
 	logger.Println("Successfully got products in category", categoryName)
 	return products, nil
+}
+
+// getCategoryID retrieves ID of category from database
+func getCategoryID(db *sql.DB, categoryName string) (int64, error) {
+	query := "SELECT id FROM categories WHERE name = ?"
+	row := db.QueryRow(query, categoryName)
+
+	var categoryID int64
+	err := row.Scan(&categoryID)
+	if err != nil {
+		logger.Printf("Category %v does not exist in database yet. Creating...", categoryName)
+		return 0, err
+	}
+
+	return categoryID, nil
+}
+
+// getProductID retrieves ID of product from database
+func getProductID(db *sql.DB, productName string) (int64, error) {
+	query := "SELECT id FROM products WHERE name = ?"
+	row := db.QueryRow(query, productName)
+
+	var productID int64
+	err := row.Scan(&productID)
+	if err != nil {
+		logger.Printf("Product %v does not exist in database.", productName)
+		return 0, err
+	}
+
+	return productID, nil
 }

@@ -38,6 +38,10 @@ func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 
 //// UpdateProductHandler updates an existing product
 //func UpdateProductHandler(w http.ResponseWriter, r *http.Request) {
+//
+//	// Extract product name from request
+//	productName := GetNameFromRequest(r)
+//
 //	// Check if token is valid
 //	if !auth.RequireValidToken(w, r) {
 //		return
@@ -58,28 +62,26 @@ func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 //
 //	w.WriteHeader(http.StatusOK)
 //}
-//
-//// DeleteProductHandler deletes an existing product
-//func DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
-//	// Check if token is valid
-//	if !auth.RequireValidToken(w, r) {
-//		return
-//	}
-//
-//	err := json.NewDecoder(r.Body).Decode(&requestData)
-//	if err != nil {
-//		http.Error(w, err.Error(), http.StatusBadRequest)
-//		return
-//	}
-//
-//	err = models.DeleteProduct(database.GetDB(), requestData.Name)
-//	if err != nil {
-//		http.Error(w, err.Error(), http.StatusInternalServerError)
-//		return
-//	}
-//
-//	w.WriteHeader(http.StatusOK)
-//}
+
+// DeleteProductHandler deletes an existing product
+func DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Extract product name from request
+	productName := GetNameFromRequest(r)
+
+	// Check if token is valid
+	if !auth.RequireValidToken(w, r) {
+		return
+	}
+
+	err := models.DeleteProduct(database.GetDB(), productName)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
 
 // GetProductsByCategoryHandler returns product list of concrete category
 func GetProductsByCategoryHandler(w http.ResponseWriter, r *http.Request) {

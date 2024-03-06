@@ -22,7 +22,7 @@ func RegisterHandlers() {
 	//CRUD product
 	router.HandleFunc("/product", CreateProductHandler).Methods("POST") // CREATE
 	//router.HandleFunc("/product/{name}", UpdateProductHandler).Methods("PUT")    // UPDATE
-	//router.HandleFunc("/product/{name}", DeleteProductHandler).Methods("DELETE") // DELETE
+	router.HandleFunc("/product/{name}", DeleteProductHandler).Methods("DELETE") // DELETE
 
 	http.Handle("/", router)
 }

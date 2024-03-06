@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-// CreateCategoryHandler create new category
+// CreateCategoryHandler creates new category
 func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if token is valid
 	if !auth.RequireValidToken(w, r) {
@@ -44,7 +44,7 @@ func GetCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(categories)
 }
 
-// UpdateCategoryHandler edit specified existing category
+// UpdateCategoryHandler edits specified existing category
 func UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	// Extract category name from request
 	categoryName := GetNameFromRequest(r)
