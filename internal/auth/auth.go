@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
+	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
 	"net/http"
 	"strings"
@@ -27,35 +28,26 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(token)
 }
 
-func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
-
-	// Parse request body to get user data
-	var user models.User
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
+func RequireValidToken(w http.ResponseWriter, r *http.Request) bool {
 	// Extract token from Authorization header
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
+		logger.Println("Authorization header is missing")
 		http.Error(w, "Authorization header is missing", http.StatusUnauthorized)
-		return
+		return false
 	}
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-	user.Token = tokenString
 
-	authenticated, err := models.AuthenticateUser(database.GetDB(), &user)
+	authenticated, err := models.IsTokenValid(database.GetDB(), tokenString)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return false
 	}
 
 	if !authenticated {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
+		return false
 	}
 
-	w.WriteHeader(http.StatusOK)
+	return true
 }

@@ -8,12 +8,16 @@ import (
 
 func RegisterHandlers() {
 	router := mux.NewRouter()
-	router.HandleFunc("/categories", GetCategoriesHandler).Methods("GET")
 	router.HandleFunc("/products/{categoryName}", GetProductsByCategoryHandler).Methods("GET")
 
 	// Auth routes
 	router.HandleFunc("/register", auth.RegisterUserHandler).Methods("POST")
-	router.HandleFunc("/login", auth.LoginUserHandler).Methods("POST")
+
+	//CRUD category
+	router.HandleFunc("/categories", CreateCategoryHandler).Methods("POST")                  // CREATE
+	router.HandleFunc("/categories", GetCategoriesHandler).Methods("GET")                    // READ
+	router.HandleFunc("/categories/{categoryName}", UpdateCategoryHandler).Methods("PUT")    // UPDATE
+	router.HandleFunc("/categories/{categoryName}", DeleteCategoryHandler).Methods("DELETE") // DELETE
 
 	http.Handle("/", router)
 }

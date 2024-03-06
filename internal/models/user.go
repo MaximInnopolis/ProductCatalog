@@ -15,27 +15,23 @@ type User struct {
 	Token    string `json:"token"`
 }
 
-// AuthenticateUser authenticates user
-func AuthenticateUser(db *sql.DB, user *User) (bool, error) {
+// IsTokenValid checks if token is valid
+func IsTokenValid(db *sql.DB, tokenString string) (bool, error) {
 
-	// Retrieve user data from the database
-	var dbUser User
-	err := db.QueryRow("SELECT id, username, password, token FROM users WHERE username = ?", user.Username).Scan(&dbUser.ID, &dbUser.Username, &dbUser.Password, &dbUser.Token)
+	// Retrieve token from database
+	var dbToken string
+	query := "SELECT token FROM users WHERE token = ?"
+	err := db.QueryRow(query, tokenString).Scan(&dbToken)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			logger.Println("Error retrieving user data from database:", err)
+			logger.Println("Error retrieving token from database:", err)
 			return false, nil
 		}
 		return false, err
 	}
 
-	// Check if retrieved token is NULL
-	if dbUser.Token == "" {
-		return false, errors.New("token not found")
-	}
-
 	// Check token validity
-	validToken, err := checkToken(user.Token, dbUser.Token)
+	validToken, err := checkToken(tokenString, dbToken)
 	if err != nil {
 		logger.Println("Error checking token validity:", err)
 		return false, err
@@ -44,24 +40,7 @@ func AuthenticateUser(db *sql.DB, user *User) (bool, error) {
 		return false, errors.New("invalid token")
 	}
 
-	// Retrieve hashed password from the database
-	var dbPassword string
-	err = db.QueryRow("SELECT password FROM users WHERE username = ?", user.Username).Scan(&dbPassword)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return false, nil
-		}
-		logger.Println("Error retrieving hashed password from database:", err)
-		return false, err
-	}
-
-	// Compare hashed password
-	err = bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(user.Password))
-	if err != nil {
-		return false, nil
-	}
-
-	logger.Println("Authentication successful")
+	logger.Println("Token is valid")
 	return true, nil
 }
 
