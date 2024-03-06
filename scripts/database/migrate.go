@@ -37,13 +37,10 @@ func migrate(db *sql.DB) error {
 
 	logger.Println("Table 'categories' created successfully")
 
-	// TODO: change relation muliple-multiple
 	_, err = db.Exec(`
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            category_id INTEGER, // TODO: remove
-            FOREIGN KEY(category_id) REFERENCES categories(id) // TODO: remove
+            name TEXT
         )
     `)
 	if err != nil {
@@ -52,25 +49,20 @@ func migrate(db *sql.DB) error {
 
 	logger.Println("Table 'products' created successfully")
 
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	_, err = db.Exec(`
+	   CREATE TABLE IF NOT EXISTS product_categories (
+	       product_id INTEGER,
+	       category_id INTEGER,
+	       FOREIGN KEY(product_id) REFERENCES products(id),
+	       FOREIGN KEY(category_id) REFERENCES categories(id),
+	       PRIMARY KEY (product_id, category_id)
+	   )
+	`)
+	if err != nil {
+		return err
+	}
 
-	// TODO: look closely
-	//_, err = db.Exec(`
-	//    CREATE TABLE IF NOT EXISTS product_categories (
-	//        product_id INTEGER,
-	//        category_id INTEGER,
-	//        FOREIGN KEY(product_id) REFERENCES products(id),
-	//        FOREIGN KEY(category_id) REFERENCES categories(id),
-	//        PRIMARY KEY (product_id, category_id)
-	//    )
-	//`)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//logger.Println("Table 'product_categories' created successfully")
-
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	logger.Println("Table 'product_categories' created successfully")
 
 	_, err = db.Exec(`
         CREATE TABLE IF NOT EXISTS users (

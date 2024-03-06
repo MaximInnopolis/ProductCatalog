@@ -10,9 +10,7 @@ type Category struct {
 	Name string `json:"name"`
 }
 
-// func GetAllCategories(db *sql.DB) ([]Category, error) {
 func GetAllCategories(db *sql.DB) ([]string, error) {
-	//query := "SELECT id, name FROM categories"
 	query := "SELECT name FROM categories"
 	rows, err := db.Query(query)
 	if err != nil {
@@ -20,12 +18,9 @@ func GetAllCategories(db *sql.DB) ([]string, error) {
 	}
 	defer rows.Close()
 
-	//var categories []Category
 	var categories []string
 	for rows.Next() {
-		//var category Category
 		var category string
-		//if err := rows.Scan(&category.ID, &category.Name); err != nil {
 		if err := rows.Scan(&category); err != nil {
 			return nil, err
 		}

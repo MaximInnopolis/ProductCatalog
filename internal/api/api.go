@@ -21,10 +21,10 @@ func GetCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(categories)
 }
 
-// GetProductsInCategoryHandler returns product list of concrete category
-func GetProductsInCategoryHandler(w http.ResponseWriter, r *http.Request) {
-	categoryID := getCategoryNameFromRequest(r)
-	products, err := database.GetProductsByCategory(database.GetDB(), categoryID)
+// GetProductsByCategoryHandler returns product list of concrete category
+func GetProductsByCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	categoryName := getCategoryNameFromRequest(r)
+	products, err := models.GetProductsByCategory(database.GetDB(), categoryName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -36,7 +36,6 @@ func GetProductsInCategoryHandler(w http.ResponseWriter, r *http.Request) {
 
 // getCategoryNameFromRequest retrieves category name from URL
 func getCategoryNameFromRequest(r *http.Request) string {
-	// Use Gorilla Mux to get URL parameters
 	vars := mux.Vars(r)
 	categoryName := vars["categoryName"]
 	return categoryName

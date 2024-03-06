@@ -35,6 +35,10 @@ jobs:
         working-directory: ./scripts/database
         run: go run migrate.go
 
+      - name: Create Records
+        working-directory: ./scripts/database
+        run: go run create_records.go
+
 #      - name: Deploy
 #        run: |
 
