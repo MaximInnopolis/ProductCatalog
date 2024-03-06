@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-// CreateCategoryHandler creates new category
+// CreateCategoryHandler create new category
 func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if token is valid
 	if !auth.RequireValidToken(w, r) {
@@ -23,7 +23,7 @@ func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = models.AddCategory(database.GetDB(), &category)
+	_, err = models.AddCategory(database.GetDB(), &category)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -32,10 +32,22 @@ func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+// GetCategoriesHandler returns list of all categories
+func GetCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	categories, err := models.GetAllCategories(database.GetDB())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(categories)
+}
+
 // UpdateCategoryHandler edit specified existing category
 func UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	// Extract category name from request
-	categoryName := getCategoryNameFromRequest(r)
+	categoryName := GetNameFromRequest(r)
 
 	// Check if token is valid
 	if !auth.RequireValidToken(w, r) {
@@ -61,7 +73,7 @@ func UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 // DeleteCategoryHandler deletes specified category
 func DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	// Extract category name from request
-	categoryName := getCategoryNameFromRequest(r)
+	categoryName := GetNameFromRequest(r)
 
 	// Check if token is valid
 	if !auth.RequireValidToken(w, r) {
@@ -78,36 +90,9 @@ func DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// GetCategoriesHandler returns list of all categories
-func GetCategoriesHandler(w http.ResponseWriter, r *http.Request) {
-	categories, err := models.GetAllCategories(database.GetDB())
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(categories)
-}
-
-// GetProductsByCategoryHandler returns product list of concrete category
-func GetProductsByCategoryHandler(w http.ResponseWriter, r *http.Request) {
-	// Extract category name from request
-	categoryName := getCategoryNameFromRequest(r)
-
-	products, err := models.GetProductsByCategory(database.GetDB(), categoryName)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(products)
-}
-
-// getCategoryNameFromRequest retrieves category name from URL
-func getCategoryNameFromRequest(r *http.Request) string {
+// GetNameFromRequest retrieves category name from URL
+func GetNameFromRequest(r *http.Request) string {
 	vars := mux.Vars(r)
-	categoryName := vars["categoryName"]
+	categoryName := vars["name"]
 	return categoryName
 }

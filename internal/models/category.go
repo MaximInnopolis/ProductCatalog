@@ -12,16 +12,21 @@ type Category struct {
 }
 
 // AddCategory create new category in database
-func AddCategory(db *sql.DB, category *Category) error {
+func AddCategory(db *sql.DB, category *Category) (int64, error) {
 	query := "INSERT INTO categories (name) VALUES (?)"
-	_, err := db.Exec(query, category.Name)
+	result, err := db.Exec(query, category.Name)
 	if err != nil {
 		logger.Println("Error inserting category into database:", err)
-		return err
+		return 0, err
+	}
+
+	categoryID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
 	}
 
 	logger.Println("Category added successfully")
-	return nil
+	return categoryID, nil
 }
 
 // UpdateCategory edit existing category in database
