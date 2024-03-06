@@ -2,11 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
 	"github.com/gorilla/mux"
 	"net/http"
-
-	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 )
 
 // GetCategoriesHandler returns list of all categories
