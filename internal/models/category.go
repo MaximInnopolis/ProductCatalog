@@ -14,6 +14,7 @@ func GetAllCategories(db *sql.DB) ([]string, error) {
 	query := "SELECT name FROM categories"
 	rows, err := db.Query(query)
 	if err != nil {
+		logger.Println("Error querying categories:", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -22,11 +23,13 @@ func GetAllCategories(db *sql.DB) ([]string, error) {
 	for rows.Next() {
 		var category string
 		if err := rows.Scan(&category); err != nil {
+			logger.Println("Error scanning category row:", err)
 			return nil, err
 		}
 		categories = append(categories, category)
 	}
 	if err := rows.Err(); err != nil {
+		logger.Println("Error iterating through category rows:", err)
 		return nil, err
 	}
 

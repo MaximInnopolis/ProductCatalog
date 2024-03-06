@@ -15,6 +15,7 @@ func Migrate(db *sql.DB) error {
         )
     `)
 	if err != nil {
+		logger.Println("Error creating 'categories' table:", err)
 		return err
 	}
 
@@ -27,6 +28,7 @@ func Migrate(db *sql.DB) error {
         )
     `)
 	if err != nil {
+		logger.Println("Error creating 'products' table:", err)
 		return err
 	}
 
@@ -42,6 +44,7 @@ func Migrate(db *sql.DB) error {
 	   )
 	`)
 	if err != nil {
+		logger.Println("Error creating 'product_categories' table:", err)
 		return err
 	}
 
@@ -56,6 +59,7 @@ func Migrate(db *sql.DB) error {
         )
     `)
 	if err != nil {
+		logger.Println("Error creating 'users' table:", err)
 		return err
 	}
 

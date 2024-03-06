@@ -27,14 +27,14 @@ func main() {
 
 	// Migrate
 	if err := scripts.Migrate(database.GetDB()); err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to migrate: %v", err)
 	}
 
 	log.Println("Migration completed successfully")
 
 	// Database records creation (Not necessary)
 	if err := scripts.CreateRecords(database.GetDB()); err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create records: %v", err)
 	}
 
 	log.Println("Records created successfully")

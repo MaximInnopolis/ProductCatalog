@@ -23,6 +23,7 @@ func AuthenticateUser(db *sql.DB, user *User) (bool, error) {
 	err := db.QueryRow("SELECT id, username, password, token FROM users WHERE username = ?", user.Username).Scan(&dbUser.ID, &dbUser.Username, &dbUser.Password, &dbUser.Token)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
+			logger.Println("Error retrieving user data from database:", err)
 			return false, nil
 		}
 		return false, err
@@ -36,6 +37,7 @@ func AuthenticateUser(db *sql.DB, user *User) (bool, error) {
 	// Check token validity
 	validToken, err := checkToken(user.Token, dbUser.Token)
 	if err != nil {
+		logger.Println("Error checking token validity:", err)
 		return false, err
 	}
 	if !validToken {
@@ -49,6 +51,7 @@ func AuthenticateUser(db *sql.DB, user *User) (bool, error) {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil
 		}
+		logger.Println("Error retrieving hashed password from database:", err)
 		return false, err
 	}
 
@@ -68,6 +71,7 @@ func RegisterUser(db *sql.DB, user *User) (string, error) {
 	var count int
 	err := db.QueryRow("SELECT COUNT(*) FROM users WHERE username = ?", user.Username).Scan(&count)
 	if err != nil {
+		logger.Println("Error checking if username exists:", err)
 		return "", err
 	}
 	if count > 0 {
@@ -77,18 +81,21 @@ func RegisterUser(db *sql.DB, user *User) (string, error) {
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
+		logger.Println("Error hashing password:", err)
 		return "", err
 	}
 
 	// Generate JWT token
 	token, err := generateJWT(user.Password)
 	if err != nil {
+		logger.Println("Error generating JWT token:", err)
 		return "", err
 	}
 
 	// Insert new user in database
 	_, err = db.Exec("INSERT INTO users (username, password, token) VALUES (?, ?, ?)", user.Username, hashedPassword, token)
 	if err != nil {
+		logger.Println("Error inserting new user in database:", err)
 		return "", err
 	}
 

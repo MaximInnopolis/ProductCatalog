@@ -21,6 +21,7 @@ func GetProductsByCategory(db *sql.DB, categoryName string) ([]string, error) {
 
 	rows, err := db.Query(query, categoryName)
 	if err != nil {
+		logger.Println("Error executing database query:", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -29,11 +30,13 @@ func GetProductsByCategory(db *sql.DB, categoryName string) ([]string, error) {
 	for rows.Next() {
 		var product string
 		if err := rows.Scan(&product); err != nil {
+			logger.Println("Error scanning row from query result:", err)
 			return nil, err
 		}
 		products = append(products, product)
 	}
 	if err := rows.Err(); err != nil {
+		logger.Println("Error processing query result:", err)
 		return nil, err
 	}
 
