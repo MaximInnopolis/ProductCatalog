@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/MaximInnopolis/ProductCatalog/internal/auth"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
+	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -15,6 +16,8 @@ func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	if !auth.RequireValidToken(w, r) {
 		return
 	}
+
+	logger.Println("Handling CreateCategoryHandler") // Добавленный отладочный вывод
 
 	var category models.Category
 	err := json.NewDecoder(r.Body).Decode(&category)

@@ -2,27 +2,32 @@ package api
 
 import (
 	"github.com/MaximInnopolis/ProductCatalog/internal/auth"
+	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
 func RegisterHandlers() {
 	router := mux.NewRouter()
-	router.HandleFunc("/products/{name}", GetProductsByCategoryHandler).Methods("GET")
-
-	// Auth routes
-	router.HandleFunc("/register", auth.RegisterUserHandler).Methods("POST")
 
 	//CRUD category
-	router.HandleFunc("/category", CreateCategoryHandler).Methods("POST")          // CREATE
-	router.HandleFunc("/categories", GetCategoriesHandler).Methods("GET")          // READ
-	router.HandleFunc("/category/{name}", UpdateCategoryHandler).Methods("PUT")    // UPDATE
-	router.HandleFunc("/category/{name}", DeleteCategoryHandler).Methods("DELETE") // DELETE
+	categoriesRouter := router.PathPrefix("/categories").Subrouter()
+	categoriesRouter.HandleFunc("/new", CreateCategoryHandler).Methods("POST")      // CREATE
+	categoriesRouter.HandleFunc("/list", GetCategoriesHandler).Methods("GET")       // READ
+	categoriesRouter.HandleFunc("/{name}", UpdateCategoryHandler).Methods("PUT")    // UPDATE
+	categoriesRouter.HandleFunc("/{name}", DeleteCategoryHandler).Methods("DELETE") // DELETE
 
 	//CRUD product
-	router.HandleFunc("/product", CreateProductHandler).Methods("POST")          // CREATE
-	router.HandleFunc("/product", UpdateProductHandler).Methods("PUT")           // UPDATE
-	router.HandleFunc("/product/{name}", DeleteProductHandler).Methods("DELETE") // DELETE
+	productsRouter := router.PathPrefix("/products").Subrouter()
+	productsRouter.HandleFunc("/new", CreateProductHandler).Methods("POST")           // CREATE
+	productsRouter.HandleFunc("/{name}", GetProductsByCategoryHandler).Methods("GET") // READ
+	productsRouter.HandleFunc("", UpdateProductHandler).Methods("PUT")                // UPDATE
+	productsRouter.HandleFunc("/{name}", DeleteProductHandler).Methods("DELETE")      // DELETE
 
-	http.Handle("/", router)
+	router.HandleFunc("/register", auth.RegisterUserHandler).Methods("POST")
+
+	// HTTP server start
+	logger.Println("Server started on port 8080")
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

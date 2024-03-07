@@ -1,13 +1,11 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
 	"github.com/MaximInnopolis/ProductCatalog/internal/api"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/scripts"
+	"log"
 )
 
 func main() {
@@ -40,8 +38,4 @@ func main() {
 	log.Println("Records created successfully")
 
 	api.RegisterHandlers()
-
-	// HTTP server start
-	logger.Println("Server started on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
 }

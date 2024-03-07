@@ -1,10 +1,35 @@
 # ProductCatalog
 API для каталога товаров
 
-get request:
-curl http://localhost:8080/categories
+get categories request:
+curl http://localhost:8080/categories/list
 
-post request:
+post category request:
+curl -X POST \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6IjIifQ.ABzj_AVpr2hTZm4EWtuNbQ7kMIk8Gel32z7fMuLth24" \
+-d '{ "Name": "Fish"}' \
+http://localhost:8080/categories/new
+
+
+update category request:
+curl -X PUT \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6IjIifQ.ABzj_AVpr2hTZm4EWtuNbQ7kMIk8Gel32z7fMuLth24" \
+-d '{ "Name": "Fish"}' \
+http://localhost:8080/categories/Fish
+
+
+delete request:
+
+curl -X DELETE \ 
+-H "Content-Type: application/json" \ 
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6IjIifQ.ABzj_AVpr2hTZm4EWtuNbQ7kMIk8Gel32z7fMuLth24" \
+http://localhost:8080/products/Rick
+
+
+
+post register request:
 curl -X POST \
 -H "Content-Type: application/json" \
 -d '{"username": "exampleuser", "password": "examplepassword"}' \
