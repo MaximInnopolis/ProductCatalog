@@ -6,6 +6,7 @@ import (
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
+	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -22,30 +23,28 @@ func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	var category models.Category
 	err := json.NewDecoder(r.Body).Decode(&category)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		// Write error response with bad request status code
+		utils.WriteErrorJSONResponse(w, err, http.StatusBadRequest)
 		return
 	}
 
 	_, err = models.AddCategory(database.GetDB(), &category)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// Write error response with internal server error status code
+		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
 		return
 	}
 
 	// Write success message to response
-	w.WriteHeader(http.StatusCreated)
-	_, err = w.Write([]byte("Category created"))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	utils.WriteJSONResponse(w, http.StatusCreated, "Category created")
 }
 
 // GetCategoriesHandler returns list of all categories
 func GetCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	categories, err := models.GetAllCategories(database.GetDB())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// Write error response with internal server error status code
+		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
 		return
 	}
 
@@ -66,22 +65,20 @@ func UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	var category models.Category
 	err := json.NewDecoder(r.Body).Decode(&category)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		// Write error response with bad request status code
+		utils.WriteErrorJSONResponse(w, err, http.StatusBadRequest)
 		return
 	}
 
 	err = models.UpdateCategory(database.GetDB(), categoryName, &category)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// Write error response with internal server error status code
+		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write([]byte("Category updated"))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Write success message to response
+	utils.WriteJSONResponse(w, http.StatusOK, "Category updated")
 }
 
 // DeleteCategoryHandler deletes specified category
@@ -97,16 +94,13 @@ func DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	// Delete category from database
 	err := models.DeleteCategory(database.GetDB(), categoryName)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// Write error response with internal server error status code
+		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write([]byte("Category deleted"))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Write success message to response
+	utils.WriteJSONResponse(w, http.StatusOK, "Category deleted")
 }
 
 // GetNameFromRequest retrieves category name from URL

@@ -5,6 +5,7 @@ import (
 	"github.com/MaximInnopolis/ProductCatalog/internal/auth"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
+	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
 	"net/http"
 )
 
@@ -22,23 +23,20 @@ func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		// Write error response with bad request status code
+		utils.WriteErrorJSONResponse(w, err, http.StatusBadRequest)
 		return
 	}
 
 	product := models.Product{Name: requestData.Name}
 	err = models.AddProduct(database.GetDB(), &product, requestData.Categories)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// Write error response with internal server error status code
+		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
 		return
 	}
-
-	w.WriteHeader(http.StatusCreated)
-	_, err = w.Write([]byte("Product created"))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Write success message to response
+	utils.WriteJSONResponse(w, http.StatusCreated, "Product created")
 }
 
 // UpdateProductHandler updates existing product
@@ -51,23 +49,20 @@ func UpdateProductHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		// Write error response with bad request status code
+		utils.WriteErrorJSONResponse(w, err, http.StatusBadRequest)
 		return
 	}
 
 	product := models.Product{Name: requestData.Name}
 	err = models.UpdateProduct(database.GetDB(), &product, requestData.Categories)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// Write error response with internal server error status code
+		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write([]byte("Product updated"))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Write success message to response
+	utils.WriteJSONResponse(w, http.StatusOK, "Product updated")
 }
 
 // DeleteProductHandler deletes an existing product
@@ -83,16 +78,13 @@ func DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := models.DeleteProduct(database.GetDB(), productName)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// Write error response with internal server error status code
+		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write([]byte("Product deleted"))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Write success message to response
+	utils.WriteJSONResponse(w, http.StatusOK, "Product deleted")
 }
 
 // GetProductsByCategoryHandler returns product list of concrete category
@@ -102,7 +94,8 @@ func GetProductsByCategoryHandler(w http.ResponseWriter, r *http.Request) {
 
 	products, err := models.GetProductsByCategory(database.GetDB(), categoryName)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// Write error response with internal server error status code
+		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
 		return
 	}
 

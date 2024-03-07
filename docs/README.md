@@ -54,11 +54,14 @@ http://localhost:8080/register
 │   │   └── database.go
 │   ├── /logger
 │   │   └── logger.go
+│   ├── /utils
+│   │   └── response_writer.go
 │   └── /models
 │       ├── category.go
 │       ├── product.go
 │       ├── product_database.go
 │       ├── product_helpers.go
+│       ├── response.go
 │       └── user.go
 ├── /scripts
 │   └── /database

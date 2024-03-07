@@ -47,7 +47,7 @@ func IsTokenValid(db *sql.DB, tokenString string) (bool, error) {
 
 // RegisterUser registers new user in database
 func RegisterUser(db *sql.DB, user *User) error {
-	// Check if the username already exists
+	// Check if username already exists
 	var count int
 	err := db.QueryRow("SELECT COUNT(*) FROM users WHERE username = ?", user.Username).Scan(&count)
 	if err != nil {
@@ -153,7 +153,7 @@ func checkToken(tokenString string, dbToken string) (bool, error) {
 
 // GenerateJWT generates JWT token for user with additional claims
 func generateJWT(user *User) (string, error) {
-	// Create a new token
+	// Create new token
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	// Set standard claims
@@ -164,7 +164,7 @@ func generateJWT(user *User) (string, error) {
 	// Add additional claims
 	claims["expiration"] = time.Now().Add(time.Hour * 24).Unix()
 
-	// Sign the token with the secret key
+	// Sign token with the secret key
 	tokenString, err := token.SignedString([]byte("your-secret-key"))
 	if err != nil {
 		return "", err
