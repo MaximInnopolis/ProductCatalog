@@ -20,7 +20,11 @@ curl -X PUT \
 http://localhost:8080/categories/Fish
 
 
-delete request:
+get categories request:
+curl http://localhost:8080/products/smileys%20and%20people
+
+
+delete products request:
 
 curl -X DELETE \ 
 -H "Content-Type: application/json" \ 
@@ -33,7 +37,7 @@ post register request:
 curl -X POST \
 -H "Content-Type: application/json" \
 -d '{"username": "exampleuser", "password": "examplepassword"}' \
-http://localhost:8080/register
+http://localhost:8080/auth/register
 
 /
 ├── .github

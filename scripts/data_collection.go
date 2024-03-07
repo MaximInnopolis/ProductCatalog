@@ -1,6 +1,16 @@
 package scripts
 
-import "time"
+import (
+	"database/sql"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/MaximInnopolis/ProductCatalog/internal/database"
+	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
+	"github.com/MaximInnopolis/ProductCatalog/internal/models"
+	"net/http"
+	"time"
+)
 
 // StartDataCollection starts collecting data from source and saving in database
 func StartDataCollection() {
@@ -12,29 +22,52 @@ func StartDataCollection() {
 			select {
 			case <-ticker.C:
 				// Collect and save data to database
-				collectAndSaveData()
+				collectAndSaveProducts(database.GetDB())
 			}
 		}
 	}()
 }
 
-// collectAndSaveData collects data from source and saves it to the database.
-func collectAndSaveData() {
-	// Your code for collecting data and saving it to the database
-	// For example, querying an external data source and saving the retrieved products to the database
+// collectAndSaveData collects data from source and saves it to database
+func collectAndSaveProducts(db *sql.DB) error {
+	logger.Println("Started collecting....")
+	resp, err := http.Get("https://emojihub.yurace.pro/api/all")
+	if err != nil {
+		logger.Println(err)
+		return err
+	}
+	defer resp.Body.Close()
 
-	// Example:
-	// products, err := collectDataFromExternalSource()
-	// if err != nil {
-	//     // Handle error
-	//     return
-	// }
+	var rawProducts []map[string]interface{}
+	err = json.NewDecoder(resp.Body).Decode(&rawProducts)
+	if err != nil {
+		logger.Println(err)
+		return err
+	}
 
-	// for _, product := range products {
-	//     err := models.AddProduct(database.GetDB(), &product)
-	//     if err != nil {
-	//         // Handle error
-	//         continue
-	//     }
-	// }
+	// Save products to database
+	for _, rawProduct := range rawProducts {
+		productName, ok := rawProduct["name"].(string)
+		if !ok {
+			return errors.New("product name not found in source")
+		}
+
+		categoryName, ok := rawProduct["category"].(string)
+		if !ok {
+			return errors.New("category name not found in source")
+		}
+
+		product := models.Product{Name: productName}
+		var category []models.Category
+
+		category = append(category, models.Category{Name: categoryName})
+		err = models.AddProduct(db, &product, category)
+		if err != nil {
+			logger.Println(err)
+			return err
+		}
+	}
+
+	fmt.Println("Products collected and saved successfully")
+	return nil
 }

@@ -28,6 +28,9 @@ func main() {
 		log.Fatalf("Failed to migrate: %v", err)
 	}
 
+	// Start data collection
+	scripts.StartDataCollection()
+
 	log.Println("Migration completed successfully")
 
 	// Database records creation (Not necessary)
