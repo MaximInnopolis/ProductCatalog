@@ -20,7 +20,8 @@ http://localhost:8080/register
 │       └── main.go
 ├── /internal
 │   ├── /api
-│   │   ├── api.go
+│   │   ├── category_handlers.go
+│   │   ├── product_handlers.go
 │   │   └── handlers.go
 │   ├── /auth
 │   │   └── auth.go
