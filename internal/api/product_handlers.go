@@ -34,6 +34,11 @@ func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
+	_, err = w.Write([]byte("Product created"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 // UpdateProductHandler updates existing product
@@ -58,6 +63,11 @@ func UpdateProductHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+	_, err = w.Write([]byte("Product updated"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 // DeleteProductHandler deletes an existing product
@@ -78,6 +88,11 @@ func DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+	_, err = w.Write([]byte("Product deleted"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 // GetProductsByCategoryHandler returns product list of concrete category

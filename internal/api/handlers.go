@@ -25,7 +25,10 @@ func RegisterHandlers() {
 	productsRouter.HandleFunc("", UpdateProductHandler).Methods("PUT")                // UPDATE
 	productsRouter.HandleFunc("/{name}", DeleteProductHandler).Methods("DELETE")      // DELETE
 
-	router.HandleFunc("/register", auth.RegisterUserHandler).Methods("POST")
+	// Auth router
+	authRouter := router.PathPrefix("/auth").Subrouter()
+	authRouter.HandleFunc("/register", auth.RegisterUserHandler).Methods("POST")
+	authRouter.HandleFunc("/login", auth.LoginUserHandler).Methods("POST")
 
 	// HTTP server start
 	logger.Println("Server started on port 8080")

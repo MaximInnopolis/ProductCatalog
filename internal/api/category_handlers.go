@@ -32,7 +32,13 @@ func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Write success message to response
 	w.WriteHeader(http.StatusCreated)
+	_, err = w.Write([]byte("Category created"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 // GetCategoriesHandler returns list of all categories
@@ -71,6 +77,11 @@ func UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+	_, err = w.Write([]byte("Category updated"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 // DeleteCategoryHandler deletes specified category
@@ -91,6 +102,11 @@ func DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+	_, err = w.Write([]byte("Category deleted"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 // GetNameFromRequest retrieves category name from URL

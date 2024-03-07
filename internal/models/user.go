@@ -6,6 +6,7 @@ import (
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 type User struct {
@@ -45,40 +46,67 @@ func IsTokenValid(db *sql.DB, tokenString string) (bool, error) {
 }
 
 // RegisterUser registers new user in database
-func RegisterUser(db *sql.DB, user *User) (string, error) {
+func RegisterUser(db *sql.DB, user *User) error {
 	// Check if the username already exists
 	var count int
 	err := db.QueryRow("SELECT COUNT(*) FROM users WHERE username = ?", user.Username).Scan(&count)
 	if err != nil {
 		logger.Println("Error checking if username exists:", err)
-		return "", err
+		return err
 	}
 	if count > 0 {
-		return "", errors.New("username already exists")
+		return errors.New("username already exists")
 	}
 
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		logger.Println("Error hashing password:", err)
+		return err
+	}
+
+	// Insert new user in database
+	_, err = db.Exec("INSERT INTO users (username, password) VALUES (?, ?)", user.Username, hashedPassword)
+	if err != nil {
+		logger.Println("Error inserting new user in database:", err)
+		return err
+	}
+
+	logger.Println("Successfully registered")
+
+	return nil
+}
+
+// LoginUser login user and generate JWT token
+func LoginUser(db *sql.DB, user *User) (string, error) {
+	var dbUser User
+	err := db.QueryRow("SELECT id, username, password FROM users WHERE username = ?", user.Username).Scan(&dbUser.ID, &dbUser.Username, &dbUser.Password)
+	if err != nil {
+		logger.Println("Error retrieving user from database:", err)
 		return "", err
 	}
 
+	// Compare stored password hash with provided password
+	err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password))
+	if err != nil {
+		return "", errors.New("invalid password")
+	}
+
 	// Generate JWT token
-	token, err := generateJWT(user.Password)
+	token, err := generateJWT(&dbUser)
 	if err != nil {
 		logger.Println("Error generating JWT token:", err)
 		return "", err
 	}
 
-	// Insert new user in database
-	_, err = db.Exec("INSERT INTO users (username, password, token) VALUES (?, ?, ?)", user.Username, hashedPassword, token)
+	// Update user token in database
+	_, err = db.Exec("UPDATE users SET token = ? WHERE id = ?", token, dbUser.ID)
 	if err != nil {
-		logger.Println("Error inserting new user in database:", err)
+		logger.Println("Error updating user's token in database:", err)
 		return "", err
 	}
 
-	logger.Println("Successfully registered")
+	logger.Println("Successfully logged in")
 
 	return token, nil
 }
@@ -96,30 +124,50 @@ func checkToken(tokenString string, dbToken string) (bool, error) {
 	}
 
 	// Check if token is valid
-	if _, ok := token.Claims.(jwt.MapClaims); !ok || !token.Valid {
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		logger.Println("Token is invalid")
+		return false, nil
+	}
+
+	// Check if expiration claim exists and validate it
+	expiration, ok := claims["expiration"].(float64)
+	if !ok {
+		logger.Println("no expiration claim found")
+		return false, nil
+	}
+
+	if int64(expiration) < time.Now().Unix() {
+		logger.Println("Token has expired")
 		return false, nil
 	}
 
 	// Check if tokens match
 	if tokenString != dbToken {
+		logger.Println("Tokens don't match")
 		return false, nil
 	}
 
 	return true, nil
 }
 
-// GenerateJWT generates JWT token for user
-func generateJWT(password string) (string, error) {
-	// Token creation
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"password": password,
-	})
+// GenerateJWT generates JWT token for user with additional claims
+func generateJWT(user *User) (string, error) {
+	// Create a new token
+	token := jwt.New(jwt.SigningMethodHS256)
 
-	// Signing token with secret key
+	// Set standard claims
+	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = user.ID
+	claims["username"] = user.Username
+
+	// Add additional claims
+	claims["expiration"] = time.Now().Add(time.Hour * 24).Unix()
+
+	// Sign the token with the secret key
 	tokenString, err := token.SignedString([]byte("your-secret-key"))
 	if err != nil {
 		return "", err
 	}
-
 	return tokenString, nil
 }

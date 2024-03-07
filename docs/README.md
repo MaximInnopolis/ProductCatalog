@@ -57,6 +57,8 @@ http://localhost:8080/register
 │   └── /models
 │       ├── category.go
 │       ├── product.go
+│       ├── product_database.go
+│       ├── product_helpers.go
 │       └── user.go
 ├── /scripts
 │   └── /database
