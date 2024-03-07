@@ -15,6 +15,8 @@ import (
 // StartDataCollection starts collecting data from source and saving in database
 func StartDataCollection() {
 	// Collecting data with interval
+	collectAndSaveProducts(database.GetDB())
+
 	ticker := time.NewTicker(time.Hour) // once an hour
 
 	go func() {
@@ -63,8 +65,7 @@ func collectAndSaveProducts(db *sql.DB) error {
 		category = append(category, models.Category{Name: categoryName})
 		err = models.AddProduct(db, &product, category)
 		if err != nil {
-			logger.Println(err)
-			return err
+			continue
 		}
 	}
 

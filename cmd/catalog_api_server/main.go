@@ -28,9 +28,6 @@ func main() {
 		log.Fatalf("Failed to migrate: %v", err)
 	}
 
-	// Start data collection
-	scripts.StartDataCollection()
-
 	log.Println("Migration completed successfully")
 
 	// Database records creation (Not necessary)
@@ -39,6 +36,9 @@ func main() {
 	}
 
 	log.Println("Records created successfully")
+
+	// Start data collection
+	scripts.StartDataCollection()
 
 	api.RegisterHandlers()
 }
