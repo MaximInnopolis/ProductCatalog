@@ -54,8 +54,7 @@ func Migrate(db *sql.DB) error {
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT,
-            password TEXT,
-            token TEXT
+            password TEXT
         )
     `)
 	if err != nil {

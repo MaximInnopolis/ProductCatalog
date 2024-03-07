@@ -13,7 +13,6 @@ type User struct {
 	ID       int    `json:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Token    string `json:"token"`
 }
 
 // IsTokenValid checks if token is valid
@@ -32,7 +31,7 @@ func IsTokenValid(db *sql.DB, tokenString string) (bool, error) {
 	}
 
 	// Check token validity
-	validToken, err := checkToken(tokenString, dbToken)
+	validToken, err := checkToken(tokenString)
 	if err != nil {
 		logger.Println("Error checking token validity:", err)
 		return false, err
@@ -99,19 +98,12 @@ func LoginUser(db *sql.DB, user *User) (string, error) {
 		return "", err
 	}
 
-	// Update user token in database
-	_, err = db.Exec("UPDATE users SET token = ? WHERE id = ?", token, dbUser.ID)
-	if err != nil {
-		logger.Println("Error updating user's token in database:", err)
-		return "", err
-	}
-
 	logger.Println("Successfully logged in")
 
 	return token, nil
 }
 
-func checkToken(tokenString string, dbToken string) (bool, error) {
+func checkToken(tokenString string) (bool, error) {
 	// Parse token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -131,7 +123,7 @@ func checkToken(tokenString string, dbToken string) (bool, error) {
 	}
 
 	// Check if expiration claim exists and validate it
-	expiration, ok := claims["expiration"].(float64)
+	expiration, ok := claims["exp"].(float64)
 	if !ok {
 		logger.Println("no expiration claim found")
 		return false, nil
@@ -139,12 +131,6 @@ func checkToken(tokenString string, dbToken string) (bool, error) {
 
 	if int64(expiration) < time.Now().Unix() {
 		logger.Println("Token has expired")
-		return false, nil
-	}
-
-	// Check if tokens match
-	if tokenString != dbToken {
-		logger.Println("Tokens don't match")
 		return false, nil
 	}
 
@@ -159,12 +145,12 @@ func generateJWT(user *User) (string, error) {
 	// Set standard claims
 	claims := token.Claims.(jwt.MapClaims)
 	claims["id"] = user.ID
-	claims["username"] = user.Username
+	claims["sub"] = user.Username
 
 	// Add additional claims
-	claims["expiration"] = time.Now().Add(time.Hour * 24).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
-	// Sign token with the secret key
+	// Sign token with secret key
 	tokenString, err := token.SignedString([]byte("your-secret-key"))
 	if err != nil {
 		return "", err
