@@ -7,7 +7,7 @@ curl http://localhost:8080/categories/list
 post category request:
 curl -X POST \
 -H "Content-Type: application/json" \
--H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTAwMTkyNzQsImlkIjoxLCJzdWIiOiJleGFtcGxldXNlciJ9.vWdoR9zqir_dYcH25Bqp8U7GTDujaeJbXup2zR4InS8 \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTAwMTkyNzQsImlkIjoxLCJzdWIiOiJleGFtcGxldXNlciJ9.vWdoR9zqir_dYcH25Bqp8U7GTDujaeJbXup2zR4InS8" \
 http://localhost:8080/categories/new
 
 update category request:
@@ -21,9 +21,7 @@ delete categories request:
 curl -X DELETE \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTAwMTgzNDYsImlkIjoxLCJzdWIiOiJleGFtcGxldXNlciJ9.olmHkaiko8urYeN5jpsnL1ChldJcdXkZSOd_IC3RTDQ" \
-http://localhost:8080/categories/Fish
-
-
+http://localhost:8080/categories/Food
 
 get products by category request:
 curl http://localhost:8080/products/smileys%20and%20people
@@ -31,7 +29,7 @@ curl http://localhost:8080/products/smileys%20and%20people
 delete products request:
 curl -X DELETE \
 -H "Content-Type: application/json" \
--H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTAwMTgzNDYsImlkIjoxLCJzdWIiOiJleGFtcGxldXNlciJ9.olmHkaiko8urYeN5jpsnL1ChldJcdXkZSOd_IC3RTDQ" \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTAwMjIxNjYsImlkIjoxLCJzdWIiOiJleGFtcGxldXNlciJ9.330o7IyhQFWl-9TNHJslum1A_R6tW_q0e8AqnaV6n2w" \
 http://localhost:8080/products/Rick
 
 
