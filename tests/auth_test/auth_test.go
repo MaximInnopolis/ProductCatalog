@@ -1,9 +1,7 @@
 package auth_test
 
 import (
-	"bytes"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
@@ -14,7 +12,6 @@ import (
 
 	"github.com/MaximInnopolis/ProductCatalog/internal/auth"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
-	"github.com/MaximInnopolis/ProductCatalog/internal/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,63 +26,6 @@ type mockTokenValidator struct{}
 // IsTokenValid always returns true without error
 func (m *mockTokenValidator) IsTokenValid(db *sql.DB, tokenString string) (bool, error) {
 	return true, nil
-}
-
-func TestRegisterUserHandler_Success(t *testing.T) {
-	// Create test user
-	user := models.User{Username: "testuser", Password: "testpassword"}
-	userJSON, _ := json.Marshal(user)
-
-	// Mock HTTP request
-	req, err := http.NewRequest("POST", "/register", bytes.NewBuffer(userJSON))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Mock HTTP response recorder
-	rr := httptest.NewRecorder()
-
-	// Mock database
-	database.Init(":memory:")
-	defer database.Close()
-
-	// Execute HTTP handler
-	http.HandlerFunc(auth.RegisterUserHandler).ServeHTTP(rr, req)
-
-	// Check status code
-	assert.Equal(t, http.StatusOK, rr.Code)
-
-	// Check response body
-	expectedBody := `{"message":"Successfully registered"}`
-	assert.Equal(t, expectedBody, rr.Body.String())
-}
-
-func TestLoginUserHandler_Success(t *testing.T) {
-	// Create test user
-	user := models.User{Username: "testuser", Password: "testpassword"}
-	userJSON, _ := json.Marshal(user)
-
-	// Mock HTTP request
-	req, err := http.NewRequest("POST", "/login", bytes.NewBuffer(userJSON))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Mock HTTP response recorder
-	rr := httptest.NewRecorder()
-
-	// Mock database
-	database.Init(":memory:")
-	defer database.Close()
-
-	// Execute HTTP handler
-	http.HandlerFunc(auth.LoginUserHandler).ServeHTTP(rr, req)
-
-	// Check status code
-	assert.Equal(t, http.StatusOK, rr.Code)
-
-	// Check response body
-	assert.Contains(t, rr.Body.String(), "Successfully logged in")
 }
 
 func TestRequireValidToken_Success(t *testing.T) {

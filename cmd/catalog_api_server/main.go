@@ -7,7 +7,10 @@ import (
 	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
 	"github.com/MaximInnopolis/ProductCatalog/scripts"
 	"log"
+	"os"
 )
+
+var DBPATH = os.Getenv("DB_PATH")
 
 func main() {
 	// Logger initialization
@@ -20,9 +23,7 @@ func main() {
 	// Load env data
 	utils.LoadEnv()
 
-	// Database initialization
-	dbPath := "./data/database.db"
-	if err := database.Init(dbPath); err != nil {
+	if err := database.Init(DBPATH); err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 	defer database.Close()
@@ -34,12 +35,12 @@ func main() {
 
 	log.Println("Migration completed successfully")
 
-	//// Database records creation (Not necessary)
-	//if err := scripts.CreateRecords(database.GetDB()); err != nil {
-	//	log.Fatalf("Failed to create records: %v", err)
-	//}
-	//
-	//log.Println("Records created successfully")
+	// Database records creation (Not necessary)
+	if err := scripts.CreateRecords(database.GetDB()); err != nil {
+		log.Fatalf("Failed to create records: %v", err)
+	}
+
+	log.Println("Records created successfully")
 
 	// Start data collection
 	scripts.StartDataCollection()

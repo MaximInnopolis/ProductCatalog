@@ -24,11 +24,8 @@ func IsTokenValid(db *sql.DB, tokenString string) (bool, error) {
 
 	// Check token validity
 	validToken, err := CheckToken(tokenString)
-	if err != nil {
+	if err != nil || !validToken {
 		logger.Println("Error checking token validity:", err)
-		return false, err
-	}
-	if !validToken {
 		return false, errors.New("invalid token")
 	}
 
@@ -73,7 +70,7 @@ func LoginUser(db *sql.DB, user *User) (string, error) {
 	var dbUser User
 	err := db.QueryRow("SELECT id, username, password FROM users WHERE username = ?", user.Username).Scan(&dbUser.ID, &dbUser.Username, &dbUser.Password)
 	if err != nil {
-		logger.Println("Error retrieving user from database:", err)
+		logger.Println("Error retrieving user from database:", errors.New("not registered yet"))
 		return "", err
 	}
 

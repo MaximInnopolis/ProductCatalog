@@ -18,9 +18,9 @@ func TestAddCategory(t *testing.T) {
 	defer db.Close()
 
 	// Create necessary tables
-	createTables(db)
+	createCategoryTable(db)
 
-	// Create new category
+	// Create test category
 	category := &models.Category{Name: "Test Category"}
 
 	// Add category to database
@@ -29,9 +29,9 @@ func TestAddCategory(t *testing.T) {
 		t.Fatalf("Error adding category: %v", err)
 	}
 
-	// Check if category ID is greater thzero
+	// Check if category ID is greater than zero
 	if categoryID <= 0 {
-		t.Error("Expected category ID to be greater thzero")
+		t.Error("Expected category ID to be greater than zero")
 	}
 
 	// Retrieve all categories from database
@@ -63,7 +63,7 @@ func TestUpdateCategory(t *testing.T) {
 	defer db.Close()
 
 	// Create necessary tables
-	createTables(db)
+	createCategoryTable(db)
 
 	// Create new category
 	category := &models.Category{Name: "Test Category"}
@@ -110,7 +110,7 @@ func TestDeleteCategory(t *testing.T) {
 	defer db.Close()
 
 	// Create necessary tables
-	createTables(db)
+	createCategoryTable(db)
 
 	// Create new category
 	category := &models.Category{Name: "Test Category"}
@@ -146,8 +146,8 @@ func TestDeleteCategory(t *testing.T) {
 	}
 }
 
-// createTables creates necessary tables in database
-func createTables(db *sql.DB) {
+// createCategoryTable creates necessary tables in database
+func createCategoryTable(db *sql.DB) {
 	createCategoriesTableQuery := `
 		CREATE TABLE IF NOT EXISTS categories (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
