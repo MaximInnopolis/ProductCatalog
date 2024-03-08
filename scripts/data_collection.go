@@ -29,7 +29,7 @@ func StartDataCollection() {
 	}()
 }
 
-// collectAndSaveData collects data from source and saves it to database
+// CollectAndSaveProducts collects data from source and saves it to database
 func CollectAndSaveProducts(db *sql.DB) error {
 	logger.Println("Started collecting....")
 	resp, err := http.Get("https://emojihub.yurace.pro/api/all")

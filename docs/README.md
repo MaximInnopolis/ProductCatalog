@@ -76,20 +76,19 @@ go test -v ./tests/models
 │   └── data_collection.go
 ├── /tests
 │   ├── /api
-│   │   ├── category_handlers_test.go
-│   │   └── product_handlers_test.go
+│   │   ├── category_handlers_test.go -
+│   │   └── product_handlers_test.go -
 │   ├── /auth
-│   │   └── auth_test.go
+│   │   └── auth_test.go -
 │   ├── /database
-│   │   └── database_test.go
+│   │   └── database_test.go +
 │   ├── /models
-│   │   ├── category_test.go
-│   │   └── product_test.go
-│   │   └── user_test.go
+│   │   ├── category_test.go +
+│   │   └── product_test.go +
+│   │   └── user_test.go +
 │   └── /scripts
-│       ├── migrate_test.go
-│       ├── create_records_test.go
-│       └── data_collection_test.go
+│       ├── migrate_test.go +
+│       └── create_records_test.go
 ├── /docs
 │   └── README.md
 ├── /data
