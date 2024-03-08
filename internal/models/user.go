@@ -6,6 +6,7 @@ import (
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
+	"os"
 	"time"
 )
 
@@ -139,6 +140,9 @@ func checkToken(tokenString string) (bool, error) {
 
 // GenerateJWT generates JWT token for user with additional claims
 func generateJWT(user *User) (string, error) {
+	// Get secret key from environment variable
+	secretKey := os.Getenv("SECRET_KEY")
+
 	// Create new token
 	token := jwt.New(jwt.SigningMethodHS256)
 
@@ -151,7 +155,7 @@ func generateJWT(user *User) (string, error) {
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 	// Sign token with secret key
-	tokenString, err := token.SignedString([]byte("your-secret-key"))
+	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
 		return "", err
 	}

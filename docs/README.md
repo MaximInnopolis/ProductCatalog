@@ -60,6 +60,7 @@ http://localhost:8080/auth/register
 │   │   └── logger.go
 │   ├── /utils
 │   │   └── response_writer.go
+│   │   └── env_loader.go
 │   └── /models
 │       ├── category.go
 │       ├── product.go

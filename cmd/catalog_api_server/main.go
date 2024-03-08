@@ -4,6 +4,7 @@ import (
 	"github.com/MaximInnopolis/ProductCatalog/internal/api"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
+	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
 	"github.com/MaximInnopolis/ProductCatalog/scripts"
 	"log"
 )
@@ -15,6 +16,9 @@ func main() {
 			log.Fatalf("Failed to close log file: %v", err)
 		}
 	}()
+
+	// Load env data
+	utils.LoadEnv()
 
 	// Database initialization
 	dbPath := "./data/database.db"
