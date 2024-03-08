@@ -1,4 +1,4 @@
-package models_test
+package models_test_test
 
 import (
 	"database/sql"
