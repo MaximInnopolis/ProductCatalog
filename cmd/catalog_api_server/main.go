@@ -34,12 +34,12 @@ func main() {
 
 	log.Println("Migration completed successfully")
 
-	// Database records creation (Not necessary)
-	if err := scripts.CreateRecords(database.GetDB()); err != nil {
-		log.Fatalf("Failed to create records: %v", err)
-	}
-
-	log.Println("Records created successfully")
+	//// Database records creation (Not necessary)
+	//if err := scripts.CreateRecords(database.GetDB()); err != nil {
+	//	log.Fatalf("Failed to create records: %v", err)
+	//}
+	//
+	//log.Println("Records created successfully")
 
 	// Start data collection
 	scripts.StartDataCollection()

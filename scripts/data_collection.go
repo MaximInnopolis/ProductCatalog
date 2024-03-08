@@ -23,14 +23,14 @@ func StartDataCollection() {
 			select {
 			case <-ticker.C:
 				// Collect and save data to database
-				collectAndSaveProducts(database.GetDB())
+				CollectAndSaveProducts(database.GetDB())
 			}
 		}
 	}()
 }
 
 // collectAndSaveData collects data from source and saves it to database
-func collectAndSaveProducts(db *sql.DB) error {
+func CollectAndSaveProducts(db *sql.DB) error {
 	logger.Println("Started collecting....")
 	resp, err := http.Get("https://emojihub.yurace.pro/api/all")
 	if err != nil {

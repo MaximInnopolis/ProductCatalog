@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-// LoadEnv loads environment variables from a .env file
+// LoadEnv loads environment variables from .env file
 func LoadEnv() {
 	err := godotenv.Load(".env")
 	if err != nil {

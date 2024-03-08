@@ -65,7 +65,7 @@ func UpdateProductHandler(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSONResponse(w, http.StatusOK, "Product updated")
 }
 
-// DeleteProductHandler deletes an existing product
+// DeleteProductHandler deletes existing product
 func DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Extract product name from request

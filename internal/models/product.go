@@ -35,7 +35,7 @@ func AddProduct(db *sql.DB, product *Product, categories []Category) error {
 
 	// Insert associations into 'product_categories' table
 	for _, category := range categories {
-		categoryID, err := getCategoryID(db, category.Name)
+		categoryID, err := GetCategoryID(db, category.Name)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 
@@ -72,13 +72,13 @@ func UpdateProduct(db *sql.DB, product *Product, categories []Category) error {
 	}
 
 	// Check if product exists in database
-	productID, err := getProductID(db, product.Name)
+	productID, err := GetProductID(db, product.Name)
 	if err != nil {
 		return err
 	}
 
 	// Get current categories associated with product
-	currentCategories, err := getCategoriesByProductID(db, productID)
+	currentCategories, err := GetCategoriesByProductID(db, productID)
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func UpdateProduct(db *sql.DB, product *Product, categories []Category) error {
 
 	// Insert new categories into 'categories' table if they don't exist yet
 	for _, category := range categories {
-		categoryID, err := getCategoryID(db, category.Name)
+		categoryID, err := GetCategoryID(db, category.Name)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				// If category doesn't exist, add it to 'categories' table
@@ -107,7 +107,7 @@ func UpdateProduct(db *sql.DB, product *Product, categories []Category) error {
 	// Remove categories that are no longer associated with product
 	for _, currentCategory := range currentCategories {
 		if _, exists := categoryIDMap[currentCategory]; !exists {
-			if err := deleteProductCategory(db, productID, currentCategory); err != nil {
+			if err := DeleteProductCategory(db, productID, currentCategory); err != nil {
 				return err
 			}
 		}
@@ -116,7 +116,7 @@ func UpdateProduct(db *sql.DB, product *Product, categories []Category) error {
 	// Insert new associations into 'product_categories' table
 	for _, category := range categories {
 		categoryID := categoryIDMap[category.Name]
-		if !contains(currentCategories, category.Name) {
+		if !Contains(currentCategories, category.Name) {
 			query := "INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)"
 			_, err = db.Exec(query, productID, categoryID)
 			if err != nil {
@@ -134,7 +134,7 @@ func UpdateProduct(db *sql.DB, product *Product, categories []Category) error {
 func DeleteProduct(db *sql.DB, productName string) error {
 
 	// Check if product exists in database
-	productID, err := getProductID(db, productName)
+	productID, err := GetProductID(db, productName)
 	if err != nil {
 		return err
 	}

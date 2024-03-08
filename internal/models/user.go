@@ -23,7 +23,7 @@ var SECRET_KEY = os.Getenv("SECRET_KEY")
 func IsTokenValid(db *sql.DB, tokenString string) (bool, error) {
 
 	// Check token validity
-	validToken, err := checkToken(tokenString)
+	validToken, err := CheckToken(tokenString)
 	if err != nil {
 		logger.Println("Error checking token validity:", err)
 		return false, err
@@ -84,7 +84,7 @@ func LoginUser(db *sql.DB, user *User) (string, error) {
 	}
 
 	// Generate JWT token
-	token, err := generateJWT(&dbUser)
+	token, err := GenerateJWT(&dbUser)
 	if err != nil {
 		logger.Println("Error generating JWT token:", err)
 		return "", err
@@ -95,7 +95,7 @@ func LoginUser(db *sql.DB, user *User) (string, error) {
 	return token, nil
 }
 
-func checkToken(tokenString string) (bool, error) {
+func CheckToken(tokenString string) (bool, error) {
 
 	// Parse token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -131,7 +131,7 @@ func checkToken(tokenString string) (bool, error) {
 }
 
 // GenerateJWT generates JWT token for user with additional claims
-func generateJWT(user *User) (string, error) {
+func GenerateJWT(user *User) (string, error) {
 	// Create new token
 	token := jwt.New(jwt.SigningMethodHS256)
 

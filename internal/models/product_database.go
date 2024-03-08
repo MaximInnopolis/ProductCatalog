@@ -5,8 +5,8 @@ import (
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 )
 
-// getCategoryID retrieves ID of category from database
-func getCategoryID(db *sql.DB, categoryName string) (int64, error) {
+// GetCategoryID retrieves ID of category from database
+func GetCategoryID(db *sql.DB, categoryName string) (int64, error) {
 	query := "SELECT id FROM categories WHERE name = ?"
 	row := db.QueryRow(query, categoryName)
 
@@ -20,8 +20,8 @@ func getCategoryID(db *sql.DB, categoryName string) (int64, error) {
 	return categoryID, nil
 }
 
-// getProductID retrieves ID of product from database
-func getProductID(db *sql.DB, productName string) (int64, error) {
+// GetProductID retrieves ID of product from database
+func GetProductID(db *sql.DB, productName string) (int64, error) {
 	query := "SELECT id FROM products WHERE name = ?"
 	row := db.QueryRow(query, productName)
 
@@ -35,7 +35,7 @@ func getProductID(db *sql.DB, productName string) (int64, error) {
 	return productID, nil
 }
 
-func deleteProductCategory(db *sql.DB, productID int64, categoryName string) error {
+func DeleteProductCategory(db *sql.DB, productID int64, categoryName string) error {
 	query := `
 		DELETE FROM product_categories
 		WHERE product_id = ? AND category_id = (SELECT id FROM categories WHERE name = ?)
@@ -51,8 +51,8 @@ func deleteProductCategory(db *sql.DB, productID int64, categoryName string) err
 	return nil
 }
 
-// getCategoriesByProductID retrieves categories associated with product from database
-func getCategoriesByProductID(db *sql.DB, productID int64) ([]string, error) {
+// GetCategoriesByProductID retrieves categories associated with product from database
+func GetCategoriesByProductID(db *sql.DB, productID int64) ([]string, error) {
 	query := `
 		SELECT c.name
 		FROM categories c
