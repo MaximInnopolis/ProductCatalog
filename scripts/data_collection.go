@@ -14,10 +14,9 @@ import (
 
 // StartDataCollection starts collecting data from source and saving in database
 func StartDataCollection() {
-	// Collecting data with interval
-	collectAndSaveProducts(database.GetDB())
 
-	ticker := time.NewTicker(time.Hour) // once an hour
+	// Set up ticker for collecting data at intervals
+	ticker := time.NewTicker(time.Hour)
 
 	go func() {
 		for {

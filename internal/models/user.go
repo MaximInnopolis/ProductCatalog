@@ -16,20 +16,11 @@ type User struct {
 	Password string `json:"password"`
 }
 
+// SECRET_KEY Get secret key from environment variable
+var SECRET_KEY = os.Getenv("SECRET_KEY")
+
 // IsTokenValid checks if token is valid
 func IsTokenValid(db *sql.DB, tokenString string) (bool, error) {
-
-	// Retrieve token from database
-	var dbToken string
-	query := "SELECT token FROM users WHERE token = ?"
-	err := db.QueryRow(query, tokenString).Scan(&dbToken)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			logger.Println("Error retrieving token from database:", err)
-			return false, nil
-		}
-		return false, err
-	}
 
 	// Check token validity
 	validToken, err := checkToken(tokenString)
@@ -105,12 +96,13 @@ func LoginUser(db *sql.DB, user *User) (string, error) {
 }
 
 func checkToken(tokenString string) (bool, error) {
+
 	// Parse token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-		return []byte("your-secret-key"), nil
+		return []byte(SECRET_KEY), nil
 	})
 	if err != nil {
 		return false, err
@@ -140,9 +132,6 @@ func checkToken(tokenString string) (bool, error) {
 
 // GenerateJWT generates JWT token for user with additional claims
 func generateJWT(user *User) (string, error) {
-	// Get secret key from environment variable
-	secretKey := os.Getenv("SECRET_KEY")
-
 	// Create new token
 	token := jwt.New(jwt.SigningMethodHS256)
 
@@ -155,7 +144,7 @@ func generateJWT(user *User) (string, error) {
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 	// Sign token with secret key
-	tokenString, err := token.SignedString([]byte(secretKey))
+	tokenString, err := token.SignedString([]byte(SECRET_KEY))
 	if err != nil {
 		return "", err
 	}
