@@ -7,6 +7,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// Migrate migrates database schema by creating necessary tables if they do not exist
+// takes *sql.DB parameter representing database connection
+// If any error occurs during table creation, logs error and returns it
+// Otherwise logs successful creation of each table and returns nil
 func Migrate(db *sql.DB) error {
 	_, err := db.Exec(`
         CREATE TABLE IF NOT EXISTS categories (

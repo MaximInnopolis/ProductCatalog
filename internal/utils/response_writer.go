@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// WriteErrorJSONResponse writes error JSON response with given error message and status code to provided http.ResponseWriter
 func WriteErrorJSONResponse(w http.ResponseWriter, err error, status int) {
 	response := models.ErrorResponse{Error: err.Error()}
 	w.WriteHeader(status)
@@ -16,6 +17,7 @@ func WriteErrorJSONResponse(w http.ResponseWriter, err error, status int) {
 	}
 }
 
+// WriteJSONResponse writes JSON response with given message and status code to provided http.ResponseWriter
 func WriteJSONResponse(w http.ResponseWriter, status int, message string) {
 	response := models.ResponseMessage{Message: message}
 	w.WriteHeader(status)
@@ -25,6 +27,8 @@ func WriteJSONResponse(w http.ResponseWriter, status int, message string) {
 		WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
 	}
 }
+
+// WriteTokenJSONResponse writes JSON response with given message, status code, and JWT token to provided http.ResponseWriter
 
 func WriteTokenJSONResponse(w http.ResponseWriter, status int, message, token string) {
 	response := models.TokenResponseMessage{Message: message, Token: token}

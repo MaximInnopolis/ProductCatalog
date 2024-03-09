@@ -8,6 +8,8 @@ import (
 
 var db *sql.DB
 
+// Init initializes database connection using provided database path
+// Returns  error if  connection cannot be established
 func Init(dbPath string) error {
 	var err error
 	db, err = sql.Open("sqlite3", dbPath)
@@ -27,6 +29,7 @@ func Init(dbPath string) error {
 	return nil
 }
 
+// Close closes database connection
 func Close() {
 	if db != nil {
 		if err := db.Close(); err != nil {
@@ -37,6 +40,7 @@ func Close() {
 	}
 }
 
+// GetDB returns reference to database connection
 func GetDB() *sql.DB {
 	return db
 }

@@ -45,5 +45,6 @@ func main() {
 	// Start data collection
 	scripts.StartDataCollection()
 
+	// Register HTTP request handlers
 	api.RegisterHandlers()
 }

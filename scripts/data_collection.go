@@ -12,7 +12,8 @@ import (
 	"time"
 )
 
-// StartDataCollection starts collecting data from source and saving in database
+// StartDataCollection starts periodic data collection process to collect data from specified source and save to database
+// sets up ticker to trigger data collection at regular intervals and runs collection process in goroutine
 func StartDataCollection() {
 
 	// Set up ticker for collecting data at intervals
@@ -29,9 +30,12 @@ func StartDataCollection() {
 	}()
 }
 
-// CollectAndSaveProducts collects data from source and saves it to database
+// CollectAndSaveProducts collects data from specified source, processes it, and saves to database
+// sends HTTP request to source API to retrieve raw product data, processes data, and saves to database
+// If any errors occur during process, logs error and continues processing other products
 func CollectAndSaveProducts(db *sql.DB) error {
 	logger.Println("Started collecting....")
+	// Send HTTP request to retrieve raw product data from source
 	resp, err := http.Get("https://emojihub.yurace.pro/api/all")
 	if err != nil {
 		logger.Println(err)
@@ -39,6 +43,7 @@ func CollectAndSaveProducts(db *sql.DB) error {
 	}
 	defer resp.Body.Close()
 
+	// Decode raw product data from response body
 	var rawProducts []map[string]interface{}
 	err = json.NewDecoder(resp.Body).Decode(&rawProducts)
 	if err != nil {

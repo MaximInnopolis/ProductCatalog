@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// RegisterHandlers registers HTTP request handlers
 func RegisterHandlers() {
 	router := mux.NewRouter()
 
