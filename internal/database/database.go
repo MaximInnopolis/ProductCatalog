@@ -14,13 +14,13 @@ func Init(dbPath string) error {
 	var err error
 	db, err = sql.Open("sqlite3", dbPath)
 	if err != nil {
-		logger.Printf("Failed to open database connection: %v", err)
+		logger.Println("Failed to open database connection:", err)
 		return err
 	}
 
 	// Database connection check
-	if err := db.Ping(); err != nil {
-		logger.Printf("Failed to ping database: %v", err)
+	if err = db.Ping(); err != nil {
+		logger.Println("Failed to ping database:", err)
 		return err
 	}
 

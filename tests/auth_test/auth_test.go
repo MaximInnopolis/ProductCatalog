@@ -3,6 +3,7 @@ package auth_test
 import (
 	"database/sql"
 	"errors"
+	"github.com/MaximInnopolis/ProductCatalog/internal/auth"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
 	"net/http"
@@ -10,7 +11,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/MaximInnopolis/ProductCatalog/internal/auth"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/stretchr/testify/assert"
 )

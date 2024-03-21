@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/MaximInnopolis/ProductCatalog/internal/auth"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
+	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
 	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
 	"net/http"
@@ -20,6 +21,9 @@ var requestData struct {
 // Then parses request body to extract product data and creates new product in database
 // If successful, writes success message to response; otherwise writes error response
 func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger.Printf(ctx, "Creating new product")
+
 	// Check if token is valid
 	if !auth.RequireValidToken(w, r) {
 		return
@@ -36,7 +40,7 @@ func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 	// Create product struct and insert product name from request data
 	product := models.Product{Name: requestData.Name}
 	// Add product to database
-	err = models.AddProduct(database.GetDB(), &product, requestData.Categories)
+	err = models.AddProduct(ctx, database.GetDB(), &product, requestData.Categories)
 	if err != nil {
 		// Write error response with internal server error status code
 		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
@@ -51,6 +55,9 @@ func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 // Then parses request body to extract product data and updates corresponding product in database
 // If successful, writes success message to response; otherwise writes error response
 func UpdateProductHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger.Printf(ctx, "Updating product")
+
 	// Check if token is valid
 	if !auth.RequireValidToken(w, r) {
 		return
@@ -67,7 +74,7 @@ func UpdateProductHandler(w http.ResponseWriter, r *http.Request) {
 	// Create product struct and insert product name from request data
 	product := models.Product{Name: requestData.Name}
 	// Update product in database
-	err = models.UpdateProduct(database.GetDB(), &product, requestData.Categories)
+	err = models.UpdateProduct(ctx, database.GetDB(), &product, requestData.Categories)
 	if err != nil {
 		// Write error response with internal server error status code
 		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
@@ -83,6 +90,9 @@ func UpdateProductHandler(w http.ResponseWriter, r *http.Request) {
 // If token is valid, proceeds to delete product from database
 // If successful, writes success message to response; otherwise writes error response
 func DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger.Printf(ctx, "Deleting product")
+
 	// Extract product name from request
 	productName := GetNameFromRequest(r)
 
@@ -92,7 +102,7 @@ func DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete product from database
-	err := models.DeleteProduct(database.GetDB(), productName)
+	err := models.DeleteProduct(ctx, database.GetDB(), productName)
 	if err != nil {
 		// Write error response with internal server error status code
 		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
@@ -108,11 +118,14 @@ func DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
 // Then retrieves list of products associated with specified category name from database
 // If successful, writes list of products in JSON format to response; otherwise writes error response
 func GetProductsByCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger.Printf(ctx, "Getting products by category")
+
 	// Extract category name from request
 	categoryName := GetNameFromRequest(r)
 
 	// Get list of products by category name from database
-	products, err := models.GetProductsByCategory(database.GetDB(), categoryName)
+	products, err := models.GetProductsByCategory(ctx, database.GetDB(), categoryName)
 	if err != nil {
 		// Write error response with internal server error status code
 		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)

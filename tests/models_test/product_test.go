@@ -1,6 +1,7 @@
 package models_test
 
 import (
+	"context"
 	"database/sql"
 	"testing"
 
@@ -9,6 +10,7 @@ import (
 )
 
 func TestAddProduct(t *testing.T) {
+	ctx := context.WithValue(context.Background(), "endpoint", "products/new")
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
 		t.Fatalf("Error opening database: %v", err)
@@ -20,19 +22,19 @@ func TestAddProduct(t *testing.T) {
 	product := &models.Product{Name: "Test Product"}
 	categories := []models.Category{{Name: "Test Category"}}
 
-	err = models.AddProduct(db, product, categories)
+	err = models.AddProduct(ctx, db, product, categories)
 	if err != nil {
 		t.Fatalf("Error adding product: %v", err)
 	}
 
 	// Retrieve product ID after adding product
-	productID, err := models.GetProductID(db, product.Name)
+	productID, err := models.GetProductID(ctx, db, product.Name)
 	if err != nil {
 		t.Fatalf("Error getting product ID: %v", err)
 	}
 
 	// Check if categories were associated with product
-	associatedCategories, err := models.GetCategoriesByProductID(db, productID)
+	associatedCategories, err := models.GetCategoriesByProductID(ctx, db, productID)
 	if err != nil {
 		t.Fatalf("Error getting categories associated with product: %v", err)
 	}
@@ -42,6 +44,8 @@ func TestAddProduct(t *testing.T) {
 }
 
 func TestUpdateProduct(t *testing.T) {
+	ctx := context.WithValue(context.Background(), "endpoint", "products")
+
 	// Open in-memory SQLite database for testing
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
@@ -60,7 +64,7 @@ func TestUpdateProduct(t *testing.T) {
 
 	// Add test categories to database
 	for _, category := range testCategories {
-		_, err := models.AddCategory(db, &category)
+		_, err := models.AddCategory(ctx, db, &category)
 		if err != nil {
 			t.Fatalf("Error adding category: %v", err)
 		}
@@ -70,20 +74,20 @@ func TestUpdateProduct(t *testing.T) {
 	testProduct := &models.Product{Name: "Test Product"}
 
 	// Add test product to database
-	err = models.AddProduct(db, testProduct, testCategories)
+	err = models.AddProduct(ctx, db, testProduct, testCategories)
 	if err != nil {
 		t.Fatalf("Error adding product: %v", err)
 	}
 
 	// Get product ID
-	productID, err := models.GetProductID(db, testProduct.Name)
+	productID, err := models.GetProductID(ctx, db, testProduct.Name)
 	if err != nil {
 		t.Fatalf("Error getting product ID: %v", err)
 	}
 
 	// Update test product
 	updatedProduct := &models.Product{ID: int(productID), Name: "Test Product"}
-	err = models.UpdateProduct(db, updatedProduct, testCategories)
+	err = models.UpdateProduct(ctx, db, updatedProduct, testCategories)
 	if err != nil {
 		t.Fatalf("Error updating product: %v", err)
 	}
@@ -94,6 +98,8 @@ func TestUpdateProduct(t *testing.T) {
 }
 
 func TestDeleteProduct(t *testing.T) {
+	ctx := context.WithValue(context.Background(), "endpoint", "products/")
+
 	// Open in-memory SQLite database for testing
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
@@ -109,19 +115,19 @@ func TestDeleteProduct(t *testing.T) {
 	categories := []models.Category{{Name: "Test Category"}}
 
 	// Add product
-	err = models.AddProduct(db, product, categories)
+	err = models.AddProduct(ctx, db, product, categories)
 	if err != nil {
 		t.Fatalf("Error adding product: %v", err)
 	}
 
 	// Delete product
-	err = models.DeleteProduct(db, product.Name)
+	err = models.DeleteProduct(ctx, db, product.Name)
 	if err != nil {
 		t.Fatalf("Error deleting product: %v", err)
 	}
 
 	// Check if product was deleted successfully
-	_, err = models.GetProductID(db, product.Name)
+	_, err = models.GetProductID(ctx, db, product.Name)
 	if err == nil {
 		t.Error("Expected product to be deleted, but it still exists in database")
 	}
@@ -158,6 +164,7 @@ func TestContains(t *testing.T) {
 }
 
 func TestGetCategoryID(t *testing.T) {
+	ctx := context.WithValue(context.Background(), "endpoint", "products/")
 	// Open in-memory SQLite database for testing
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
@@ -170,13 +177,13 @@ func TestGetCategoryID(t *testing.T) {
 
 	// Insert category into database
 	categoryName := "Test Category"
-	categoryID, err := models.AddCategory(db, &models.Category{Name: categoryName})
+	categoryID, err := models.AddCategory(ctx, db, &models.Category{Name: categoryName})
 	if err != nil {
 		t.Fatalf("Error adding category: %v", err)
 	}
 
 	// Retrieve ID of inserted category
-	retrievedCategoryID, err := models.GetCategoryID(db, categoryName)
+	retrievedCategoryID, err := models.GetCategoryID(ctx, db, categoryName)
 	if err != nil {
 		t.Fatalf("Error retrieving category ID: %v", err)
 	}

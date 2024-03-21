@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"database/sql"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 )
@@ -8,7 +9,7 @@ import (
 // GetCategoryID retrieves ID of category with specified name from database
 // takes database connection and category name as parameters
 // returns category ID and any error encountered
-func GetCategoryID(db *sql.DB, categoryName string) (int64, error) {
+func GetCategoryID(ctx context.Context, db *sql.DB, categoryName string) (int64, error) {
 	// Construct SQL query to select category ID based on category name
 	query := "SELECT id FROM categories WHERE name = ?"
 	// Execute query and retrieve single row result
@@ -19,7 +20,7 @@ func GetCategoryID(db *sql.DB, categoryName string) (int64, error) {
 	// Scan category ID from result row into categoryID variable
 	err := row.Scan(&categoryID)
 	if err != nil {
-		logger.Printf("Category %v does not exist in database yet. Creating...", categoryName)
+		logger.Printf(ctx, "Category %v does not exist in database yet. Creating...", categoryName)
 		return 0, err
 	}
 
@@ -30,7 +31,7 @@ func GetCategoryID(db *sql.DB, categoryName string) (int64, error) {
 // GetProductID retrieves ID of product with specified name from database
 // takes database connection and product name as parameters
 // returns product ID and any error encountered
-func GetProductID(db *sql.DB, productName string) (int64, error) {
+func GetProductID(ctx context.Context, db *sql.DB, productName string) (int64, error) {
 	// Construct SQL query to select product ID based on product name
 	query := "SELECT id FROM products WHERE name = ?"
 	// Execute query and retrieve single row result
@@ -41,7 +42,7 @@ func GetProductID(db *sql.DB, productName string) (int64, error) {
 	// Scan product ID from result row into productID variable
 	err := row.Scan(&productID)
 	if err != nil {
-		logger.Printf("Product %v does not exist in database.", productName)
+		logger.Printf(ctx, "Product %v does not exist in database.", productName)
 		return 0, err
 	}
 
@@ -52,7 +53,7 @@ func GetProductID(db *sql.DB, productName string) (int64, error) {
 // DeleteProductCategory deletes association between specified product and category from database
 // takes database connection, product ID, and category name as parameters
 // returns error if any occurred during deletion process
-func DeleteProductCategory(db *sql.DB, productID int64, categoryName string) error {
+func DeleteProductCategory(ctx context.Context, db *sql.DB, productID int64, categoryName string) error {
 	// Construct SQL query to delete association between product and category
 	query := `
 		DELETE FROM product_categories
@@ -62,18 +63,18 @@ func DeleteProductCategory(db *sql.DB, productID int64, categoryName string) err
 	// Execute delete query with provided product ID and category name
 	_, err := db.Exec(query, productID, categoryName)
 	if err != nil {
-		logger.Println("Error deleting product category association from database:", err)
+		logger.Printf(ctx, "Error deleting product category association from database: %s", err)
 		return err
 	}
 
-	logger.Println("Product category association deleted successfully")
+	logger.Printf(ctx, "Product category association deleted successfully")
 	return nil
 }
 
 // GetCategoriesByProductID retrieves categories associated with specified product from database
 // takes database connection and product ID as parameters
 // returns slice of category names and any error encountered
-func GetCategoriesByProductID(db *sql.DB, productID int64) ([]string, error) {
+func GetCategoriesByProductID(ctx context.Context, db *sql.DB, productID int64) ([]string, error) {
 	// Construct SQL query to select categories associated with given product ID
 	query := `
 		SELECT c.name
@@ -85,7 +86,7 @@ func GetCategoriesByProductID(db *sql.DB, productID int64) ([]string, error) {
 	// Execute query to retrieve categories associated with product ID
 	rows, err := db.Query(query, productID)
 	if err != nil {
-		logger.Println("Error executing database query:", err)
+		logger.Printf(ctx, "Error executing database query: %s", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -97,7 +98,7 @@ func GetCategoriesByProductID(db *sql.DB, productID int64) ([]string, error) {
 		var category string
 		// Scan category name from current row
 		if err := rows.Scan(&category); err != nil {
-			logger.Println("Error scanning row from query result:", err)
+			logger.Printf(ctx, "Error scanning row from query result: %s", err)
 			return nil, err
 		}
 		// Append category name to categories slice
@@ -106,7 +107,7 @@ func GetCategoriesByProductID(db *sql.DB, productID int64) ([]string, error) {
 
 	// Check for any errors encountered during iteration
 	if err := rows.Err(); err != nil {
-		logger.Println("Error processing query result:", err)
+		logger.Printf(ctx, "Error processing query result: %s", err)
 		return nil, err
 	}
 

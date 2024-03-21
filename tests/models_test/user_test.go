@@ -1,6 +1,7 @@
 package models_test
 
 import (
+	"context"
 	"database/sql"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
 	_ "github.com/mattn/go-sqlite3"
@@ -8,6 +9,8 @@ import (
 )
 
 func TestIsTokenValid(t *testing.T) {
+	ctx := context.WithValue(context.Background(), "endpoint", "auth/register")
+
 	// Create temporary database
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
@@ -23,18 +26,18 @@ func TestIsTokenValid(t *testing.T) {
 
 	// Create user
 	user := &models.User{Username: "testuser", Password: "testpassword"}
-	if err := models.RegisterUser(db, user); err != nil {
+	if err := models.RegisterUser(ctx, db, user); err != nil {
 		t.Fatalf("Error registering user: %v", err)
 	}
 
 	// Generate JWT token
-	token, err := models.LoginUser(db, user)
+	token, err := models.LoginUser(ctx, db, user)
 	if err != nil {
 		t.Fatalf("Error generating JWT token: %v", err)
 	}
 
 	// Check token validity
-	valid, err := models.IsTokenValid(db, token)
+	valid, err := models.IsTokenValid(ctx, token)
 	if err != nil {
 		t.Fatalf("Error checking token validity: %v", err)
 	}
@@ -45,6 +48,7 @@ func TestIsTokenValid(t *testing.T) {
 }
 
 func TestRegisterUser(t *testing.T) {
+	ctx := context.WithValue(context.Background(), "endpoint", "auth/register")
 	// Create temporary database
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
@@ -62,7 +66,7 @@ func TestRegisterUser(t *testing.T) {
 	user := &models.User{Username: "testuser", Password: "testpassword"}
 
 	// Register user
-	err = models.RegisterUser(db, user)
+	err = models.RegisterUser(ctx, db, user)
 	if err != nil {
 		t.Fatalf("Error registering user: %v", err)
 	}
@@ -80,6 +84,8 @@ func TestRegisterUser(t *testing.T) {
 }
 
 func TestLoginUser(t *testing.T) {
+	ctx := context.WithValue(context.Background(), "endpoint", "auth/login")
+
 	// Create temporary database
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
@@ -97,19 +103,20 @@ func TestLoginUser(t *testing.T) {
 	user := &models.User{Username: "testuser", Password: "testpassword"}
 
 	// Register user
-	err = models.RegisterUser(db, user)
+	err = models.RegisterUser(ctx, db, user)
 	if err != nil {
 		t.Fatalf("Error registering user: %v", err)
 	}
 
 	// Attempt to login user
-	_, err = models.LoginUser(db, user)
+	_, err = models.LoginUser(ctx, db, user)
 	if err != nil {
 		t.Fatalf("Error attempting to login user: %v", err)
 	}
 }
 
 func TestCheckTokenValid(t *testing.T) {
+	ctx := context.WithValue(context.Background(), "endpoint", "auth/login")
 	// Generate valid token
 	user := &models.User{ID: 123, Username: "testuser"}
 	tokenString, err := models.GenerateJWT(user)
@@ -118,7 +125,7 @@ func TestCheckTokenValid(t *testing.T) {
 	}
 
 	// Check validity of token
-	valid, err := models.CheckToken(tokenString)
+	valid, err := models.CheckToken(ctx, tokenString)
 	if err != nil {
 		t.Fatalf("Error checking token: %v", err)
 	}

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
@@ -14,10 +15,10 @@ type Product struct {
 // AddProduct inserts new product into 'products' table in database and associates with specified categories
 // takes database connection, pointer to product information, and slice of categories as parameters
 // returns error if any occurred during insertion process
-func AddProduct(db *sql.DB, product *Product, categories []Category) error {
+func AddProduct(ctx context.Context, db *sql.DB, product *Product, categories []Category) error {
 	// If product does not have any categories, return error
 	if len(categories) == 0 {
-		logger.Println("Error adding product: product must have at least one category")
+		logger.Printf(ctx, "Error adding product: product must have at least one category")
 		return errors.New("product must have at least one category")
 	}
 
@@ -25,30 +26,30 @@ func AddProduct(db *sql.DB, product *Product, categories []Category) error {
 	query := "INSERT INTO products (name) VALUES (?)"
 	result, err := db.Exec(query, product.Name)
 	if err != nil {
-		logger.Println("Error inserting product into database:", err)
+		logger.Printf(ctx, "Error inserting product into database: %s", err)
 		return err
 	}
 
 	productID, err := result.LastInsertId()
 	if err != nil {
-		logger.Println("Error getting last insert ID:", err)
+		logger.Printf(ctx, "Error getting last insert ID: %s", err)
 		return err
 	}
 
 	// Insert associations into 'product_categories' table
 	for _, category := range categories {
-		categoryID, err := GetCategoryID(db, category.Name)
+		categoryID, err := GetCategoryID(ctx, db, category.Name)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 
 				// If category doesn't exist, add to 'categories' table
-				categoryID, err = AddCategory(db, &category)
+				categoryID, err = AddCategory(ctx, db, &category)
 				if err != nil {
-					logger.Println("Error adding category:", err)
+					logger.Printf(ctx, "Error adding category: %s", err)
 					return err
 				}
 			} else {
-				logger.Println("Error getting category ID:", err)
+				logger.Printf(ctx, "Error getting category ID: %s", err)
 				return err
 			}
 		}
@@ -56,33 +57,33 @@ func AddProduct(db *sql.DB, product *Product, categories []Category) error {
 		query = "INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)"
 		_, err = db.Exec(query, productID, categoryID)
 		if err != nil {
-			logger.Println("Error inserting association into product_categories:", err)
+			logger.Printf(ctx, "Error inserting association into product_categories: %s", err)
 			return err
 		}
 	}
 
-	logger.Println("Product added successfully")
+	logger.Printf(ctx, "Product added successfully")
 	return nil
 }
 
 // UpdateProduct edits existing product in database along with its associated categories
 // takes database connection, pointer to updated product information, and slice of updated categories as parameters
 // returns error if any occurred during update process
-func UpdateProduct(db *sql.DB, product *Product, categories []Category) error {
+func UpdateProduct(ctx context.Context, db *sql.DB, product *Product, categories []Category) error {
 	// If product does not have any categories, return error
 	if len(categories) == 0 {
-		logger.Println("Error adding product: product must have at least one category")
+		logger.Printf(ctx, "Error adding product: product must have at least one category")
 		return errors.New("product must have at least one category")
 	}
 
 	// Check if product exists in database
-	productID, err := GetProductID(db, product.Name)
+	productID, err := GetProductID(ctx, db, product.Name)
 	if err != nil {
 		return err
 	}
 
 	// Get current categories associated with product
-	currentCategories, err := GetCategoriesByProductID(db, productID)
+	currentCategories, err := GetCategoriesByProductID(ctx, db, productID)
 	if err != nil {
 		return err
 	}
@@ -92,16 +93,16 @@ func UpdateProduct(db *sql.DB, product *Product, categories []Category) error {
 
 	// Insert new categories into 'categories' table if they don't exist yet
 	for _, category := range categories {
-		categoryID, err := GetCategoryID(db, category.Name)
+		categoryID, err := GetCategoryID(ctx, db, category.Name)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				// If category doesn't exist, add to 'categories' table
-				categoryID, err = AddCategory(db, &category)
+				categoryID, err = AddCategory(ctx, db, &category)
 				if err != nil {
 					return err
 				}
 			} else {
-				logger.Println("Error getting category ID:", err)
+				logger.Printf(ctx, "Error getting category ID: %s", err)
 				return err
 			}
 		}
@@ -111,7 +112,7 @@ func UpdateProduct(db *sql.DB, product *Product, categories []Category) error {
 	// Remove categories that are no longer associated with product
 	for _, currentCategory := range currentCategories {
 		if _, exists := categoryIDMap[currentCategory]; !exists {
-			if err := DeleteProductCategory(db, productID, currentCategory); err != nil {
+			if err := DeleteProductCategory(ctx, db, productID, currentCategory); err != nil {
 				return err
 			}
 		}
@@ -124,23 +125,23 @@ func UpdateProduct(db *sql.DB, product *Product, categories []Category) error {
 			query := "INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)"
 			_, err = db.Exec(query, productID, categoryID)
 			if err != nil {
-				logger.Println("Error inserting association into product_categories:", err)
+				logger.Printf(ctx, "Error inserting association into product_categories: %s", err)
 				return err
 			}
 		}
 	}
 
-	logger.Println("Product updated successfully")
+	logger.Printf(ctx, "Product updated successfully")
 	return nil
 }
 
 // DeleteProduct deletes specified product from database along with its associated records in 'product_categories' table
 // takes database connection and name of product to be deleted as parameters
 // returns error if any occurred during deletion process
-func DeleteProduct(db *sql.DB, productName string) error {
+func DeleteProduct(ctx context.Context, db *sql.DB, productName string) error {
 
 	// Check if product exists in database
-	productID, err := GetProductID(db, productName)
+	productID, err := GetProductID(ctx, db, productName)
 	if err != nil {
 		return err
 	}
@@ -149,20 +150,20 @@ func DeleteProduct(db *sql.DB, productName string) error {
 	query := "DELETE FROM products WHERE id = ?"
 	result, err := db.Exec(query, productID)
 	if err != nil {
-		logger.Println("Error deleting product from database:", err)
+		logger.Printf(ctx, "Error deleting product from database: %s", err)
 		return err
 	}
 
 	// Get number of rows affected by delete operation
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		logger.Println("Error getting rows affected:", err)
+		logger.Printf(ctx, "Error getting rows affected: %s", err)
 		return err
 	}
 
 	// If no rows affected, log message indicating that product was not found in database
 	if rowsAffected == 0 {
-		logger.Printf("Product %s not found in database", productName)
+		logger.Printf(ctx, "Product %s not found in database", productName)
 		return errors.New("no rows affected, product not found")
 	}
 
@@ -170,18 +171,18 @@ func DeleteProduct(db *sql.DB, productName string) error {
 	query = "DELETE FROM product_categories WHERE product_id = ?"
 	_, err = db.Exec(query, productID)
 	if err != nil {
-		logger.Println("Error deleting product associations from database:", err)
+		logger.Printf(ctx, "Error deleting product associations from database: %s", err)
 		return err
 	}
 
-	logger.Println("Product deleted successfully")
+	logger.Printf(ctx, "Product deleted successfully")
 	return nil
 }
 
 // GetProductsByCategory retrieves names of products belonging to specified category from database
 // takes database connection and name of category as parameters
 // returns slice of strings containing names of products in specified category and any error encountered
-func GetProductsByCategory(db *sql.DB, categoryName string) ([]string, error) {
+func GetProductsByCategory(ctx context.Context, db *sql.DB, categoryName string) ([]string, error) {
 	query := `
         SELECT p.name
         FROM products p
@@ -193,7 +194,7 @@ func GetProductsByCategory(db *sql.DB, categoryName string) ([]string, error) {
 	// Execute database query to retrieve products in specified category
 	rows, err := db.Query(query, categoryName)
 	if err != nil {
-		logger.Println("Error executing database query:", err)
+		logger.Printf(ctx, "Error executing database query: %s", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -205,7 +206,7 @@ func GetProductsByCategory(db *sql.DB, categoryName string) ([]string, error) {
 		var product string
 		// Scan product name from current row
 		if err := rows.Scan(&product); err != nil {
-			logger.Println("Error scanning row from query result:", err)
+			logger.Printf(ctx, "Error scanning row from query result: %s", err)
 			return nil, err
 		}
 		// Append product name to products slice
@@ -213,11 +214,11 @@ func GetProductsByCategory(db *sql.DB, categoryName string) ([]string, error) {
 	}
 	// Check for any errors encountered during iteration
 	if err := rows.Err(); err != nil {
-		logger.Println("Error processing query result:", err)
+		logger.Printf(ctx, "Error processing query result: %s", err)
 		return nil, err
 	}
 
-	logger.Println("Successfully got products in category", categoryName)
+	logger.Printf(ctx, "Successfully got products in category %s", categoryName)
 	// Return slice of product names and nil error, indicating success
 	return products, nil
 }

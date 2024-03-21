@@ -31,7 +31,7 @@ func main() {
 		log.Fatalf("Failed to migrate: %v", err)
 	}
 
-	log.Println("Migration completed successfully")
+	logger.Println("Migration completed successfully")
 
 	//// Rollback
 	//if err := scripts.Rollback(database.GetDB()); err != nil {
@@ -45,7 +45,7 @@ func main() {
 		log.Fatalf("Failed to create records: %v", err)
 	}
 
-	log.Println("Records created successfully")
+	logger.Println("Records created successfully")
 
 	// Start data collection
 	scripts.StartDataCollection()

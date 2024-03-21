@@ -1,10 +1,10 @@
 package scripts
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
@@ -34,7 +34,8 @@ func StartDataCollection() {
 // sends HTTP request to source API to retrieve raw product data, processes data, and saves to database
 // If any errors occur during process, logs error and continues processing other products
 func CollectAndSaveProducts(db *sql.DB) error {
-	logger.Println("Started collecting....")
+	ctx := context.WithValue(context.Background(), "endpoint", "product_collection")
+	logger.Printf(ctx, "Started collecting....")
 	// Send HTTP request to retrieve raw product data from source
 	resp, err := http.Get("https://emojihub.yurace.pro/api/all")
 	if err != nil {
@@ -67,12 +68,12 @@ func CollectAndSaveProducts(db *sql.DB) error {
 		var category []models.Category
 
 		category = append(category, models.Category{Name: categoryName})
-		err = models.AddProduct(db, &product, category)
+		err = models.AddProduct(ctx, db, &product, category)
 		if err != nil {
 			continue
 		}
 	}
 
-	fmt.Println("Products collected and saved successfully")
+	logger.Printf(ctx, "Products collected and saved successfully")
 	return nil
 }

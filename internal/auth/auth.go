@@ -3,10 +3,12 @@ package auth
 import (
 	"encoding/json"
 	"errors"
+	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
+
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
-	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
+
 	"net/http"
 	"strings"
 )
@@ -15,6 +17,9 @@ import (
 // Parses request body to extract user data, attempts to register user in database
 // If successful, writes success message to response; otherwise writes error response
 func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger.Printf(ctx, "Registering user")
+
 	// Parse request body to get user data
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -25,7 +30,7 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add user to database
-	err = models.RegisterUser(database.GetDB(), &user)
+	err = models.RegisterUser(ctx, database.GetDB(), &user)
 	if err != nil {
 		// Write error response with internal server error status code
 		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
@@ -39,6 +44,8 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 // Parses request body to extract user data, attempts to log in the user, and generate token
 // If successful, writes success message along with the token to the response; otherwise writes error response
 func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	// Parse request body to get user data
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -49,7 +56,7 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Login user and generate token
-	token, err := models.LoginUser(database.GetDB(), &user)
+	token, err := models.LoginUser(ctx, database.GetDB(), &user)
 	if err != nil {
 		// Write error response with internal server error status code
 		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
@@ -64,18 +71,20 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 // Extracts token from Authorization header and verifies its validity against the database
 // If token is missing or invalid, writes appropriate error response and returns false; otherwise returns true
 func RequireValidToken(w http.ResponseWriter, r *http.Request) bool {
+	ctx := r.Context()
+
 	// Extract token from Authorization header
 	authHeader := r.Header.Get("Authorization")
 	// Check if the Authorization header is missing
 	if authHeader == "" {
-		logger.Println("Authorization header is missing")
+		logger.Printf(ctx, "Authorization header is missing")
 		utils.WriteErrorJSONResponse(w, errors.New("authorization header is missing"), http.StatusInternalServerError)
 		return false
 	}
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
 	// Check if token is valid
-	authenticated, err := models.IsTokenValid(database.GetDB(), tokenString)
+	authenticated, err := models.IsTokenValid(ctx, tokenString)
 	if err != nil {
 		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
 		return false

@@ -1,6 +1,7 @@
 package models_test
 
 import (
+	"context"
 	"database/sql"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
 	"testing"
@@ -10,6 +11,7 @@ import (
 
 // TestAddCategory tests AddCategory function
 func TestAddCategory(t *testing.T) {
+	ctx := context.WithValue(context.Background(), "endpoint", "categories/new")
 	// Open in-memory SQLite database
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
@@ -24,7 +26,7 @@ func TestAddCategory(t *testing.T) {
 	category := &models.Category{Name: "Test Category"}
 
 	// Add category to database
-	categoryID, err := models.AddCategory(db, category)
+	categoryID, err := models.AddCategory(ctx, db, category)
 	if err != nil {
 		t.Fatalf("Error adding category: %v", err)
 	}
@@ -35,7 +37,7 @@ func TestAddCategory(t *testing.T) {
 	}
 
 	// Retrieve all categories from database
-	categories, err := models.GetAllCategories(db)
+	categories, err := models.GetAllCategories(ctx, db)
 	if err != nil {
 		t.Fatalf("Error retrieving categories: %v", err)
 	}
@@ -55,6 +57,7 @@ func TestAddCategory(t *testing.T) {
 
 // TestUpdateCategory tests UpdateCategory function
 func TestUpdateCategory(t *testing.T) {
+	ctx := context.WithValue(context.Background(), "endpoint", "categories/")
 	// Open in-memory SQLite database
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
@@ -69,20 +72,20 @@ func TestUpdateCategory(t *testing.T) {
 	category := &models.Category{Name: "Test Category"}
 
 	// Add category to database
-	_, err = models.AddCategory(db, category)
+	_, err = models.AddCategory(ctx, db, category)
 	if err != nil {
 		t.Fatalf("Error adding category: %v", err)
 	}
 
 	// Update category name
 	newCategoryName := "Updated Category"
-	err = models.UpdateCategory(db, category.Name, &models.Category{Name: newCategoryName})
+	err = models.UpdateCategory(ctx, db, category.Name, &models.Category{Name: newCategoryName})
 	if err != nil {
 		t.Fatalf("Error updating category: %v", err)
 	}
 
 	// Retrieve all categories from database
-	categories, err := models.GetAllCategories(db)
+	categories, err := models.GetAllCategories(ctx, db)
 	if err != nil {
 		t.Fatalf("Error retrieving categories: %v", err)
 	}
@@ -102,6 +105,7 @@ func TestUpdateCategory(t *testing.T) {
 
 // TestDeleteCategory tests DeleteCategory function
 func TestDeleteCategory(t *testing.T) {
+	ctx := context.WithValue(context.Background(), "endpoint", "categories/")
 	// Open in-memory SQLite database
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
@@ -116,19 +120,19 @@ func TestDeleteCategory(t *testing.T) {
 	category := &models.Category{Name: "Test Category"}
 
 	// Add category to database
-	_, err = models.AddCategory(db, category)
+	_, err = models.AddCategory(ctx, db, category)
 	if err != nil {
 		t.Fatalf("Error adding category: %v", err)
 	}
 
 	// Delete category from database
-	err = models.DeleteCategory(db, category.Name)
+	err = models.DeleteCategory(ctx, db, category.Name)
 	if err != nil {
 		t.Fatalf("Error deleting category: %v", err)
 	}
 
 	// Retrieve all categories from database
-	categories, err := models.GetAllCategories(db)
+	categories, err := models.GetAllCategories(ctx, db)
 	if err != nil {
 		t.Fatalf("Error retrieving categories: %v", err)
 	}

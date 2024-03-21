@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
@@ -20,57 +21,58 @@ type User struct {
 var SECRET_KEY = os.Getenv("SECRET_KEY")
 
 // IsTokenValid checks if token is valid
-func IsTokenValid(db *sql.DB, tokenString string) (bool, error) {
+func IsTokenValid(ctx context.Context, tokenString string) (bool, error) {
 
 	// Check token validity
-	validToken, err := CheckToken(tokenString)
+	validToken, err := CheckToken(ctx, tokenString)
 	if err != nil || !validToken {
-		logger.Println("Error checking token validity:", err)
+		logger.Printf(ctx, "Error checking token validity: %s", err)
 		return false, errors.New("invalid token")
 	}
 
-	logger.Println("Token is valid")
+	logger.Printf(ctx, "Token is valid")
 	return true, nil
 }
 
 // RegisterUser registers new user in database
-func RegisterUser(db *sql.DB, user *User) error {
+func RegisterUser(ctx context.Context, db *sql.DB, user *User) error {
 	// Check if username already exists
 	var count int
 	err := db.QueryRow("SELECT COUNT(*) FROM users WHERE username = ?", user.Username).Scan(&count)
 	if err != nil {
-		logger.Println("Error checking if username exists:", err)
+		logger.Printf(ctx, "Error checking if username exists: %s", err)
 		return err
 	}
 	if count > 0 {
+		logger.Printf(ctx, "Username already exists")
 		return errors.New("username already exists")
 	}
 
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		logger.Println("Error hashing password:", err)
+		logger.Printf(ctx, "Error hashing password: %s", err)
 		return err
 	}
 
 	// Insert new user in database
 	_, err = db.Exec("INSERT INTO users (username, password) VALUES (?, ?)", user.Username, hashedPassword)
 	if err != nil {
-		logger.Println("Error inserting new user in database:", err)
+		logger.Printf(ctx, "Error inserting new user in database: %s", err)
 		return err
 	}
 
-	logger.Println("Successfully registered")
+	logger.Printf(ctx, "Successfully registered")
 
 	return nil
 }
 
 // LoginUser login user and generate JWT token
-func LoginUser(db *sql.DB, user *User) (string, error) {
+func LoginUser(ctx context.Context, db *sql.DB, user *User) (string, error) {
 	var dbUser User
 	err := db.QueryRow("SELECT id, username, password FROM users WHERE username = ?", user.Username).Scan(&dbUser.ID, &dbUser.Username, &dbUser.Password)
 	if err != nil {
-		logger.Println("Error retrieving user from database:", errors.New("not registered yet"))
+		logger.Printf(ctx, "Error retrieving user from database: %s", errors.New("not registered yet"))
 		return "", err
 	}
 
@@ -83,16 +85,16 @@ func LoginUser(db *sql.DB, user *User) (string, error) {
 	// Generate JWT token
 	token, err := GenerateJWT(&dbUser)
 	if err != nil {
-		logger.Println("Error generating JWT token:", err)
+		logger.Printf(ctx, "Error generating JWT token: %s", err)
 		return "", err
 	}
 
-	logger.Println("Successfully logged in")
+	logger.Printf(ctx, "Successfully logged in")
 
 	return token, nil
 }
 
-func CheckToken(tokenString string) (bool, error) {
+func CheckToken(ctx context.Context, tokenString string) (bool, error) {
 
 	// Parse token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -108,19 +110,19 @@ func CheckToken(tokenString string) (bool, error) {
 	// Check if token is valid
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		logger.Println("Token is invalid")
+		logger.Printf(ctx, "Token is invalid")
 		return false, nil
 	}
 
 	// Check if expiration claim exists and validate it
 	expiration, ok := claims["exp"].(float64)
 	if !ok {
-		logger.Println("no expiration claim found")
+		logger.Printf(ctx, "no expiration claim found")
 		return false, nil
 	}
 
 	if int64(expiration) < time.Now().Unix() {
-		logger.Println("Token has expired")
+		logger.Printf(ctx, "Token has expired")
 		return false, nil
 	}
 

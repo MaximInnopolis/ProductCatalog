@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/MaximInnopolis/ProductCatalog/internal/auth"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
+	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
 	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
 	"github.com/gorilla/mux"
@@ -16,6 +17,9 @@ import (
 // If successful, adds category to database and writes success message to response
 // If any errors occur, writes error response
 func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger.Printf(ctx, "Creating new category")
+
 	// Check if token is valid
 	if !auth.RequireValidToken(w, r) {
 		return
@@ -31,7 +35,7 @@ func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add category to database
-	_, err = models.AddCategory(database.GetDB(), &category)
+	_, err = models.AddCategory(ctx, database.GetDB(), &category)
 	if err != nil {
 		// Write error response with internal server error status code
 		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
@@ -47,9 +51,11 @@ func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 // If successful, outputs list of categories in JSON format
 // If any errors occur, writes error response
 func GetCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger.Printf(ctx, "Getting categories")
 
 	// Get list of categories from database
-	categories, err := models.GetAllCategories(database.GetDB())
+	categories, err := models.GetAllCategories(ctx, database.GetDB())
 	if err != nil {
 		// Write error response with internal server error status code
 		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
@@ -66,6 +72,9 @@ func GetCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 // If successful, parses request body to get category data and updates category in database
 // If any errors occur during process, writes error response
 func UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger.Printf(ctx, "Updating category")
+
 	// Extract category name from request
 	categoryName := GetNameFromRequest(r)
 
@@ -84,7 +93,7 @@ func UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update category in database
-	err = models.UpdateCategory(database.GetDB(), categoryName, &category)
+	err = models.UpdateCategory(ctx, database.GetDB(), categoryName, &category)
 	if err != nil {
 		// Write error response with internal server error status code
 		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
@@ -100,6 +109,8 @@ func UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 // and then deletes category from database.
 // If any errors occur during process, writes error response
 func DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger.Printf(ctx, "Deleting category")
 	// Extract category name from request
 	categoryName := GetNameFromRequest(r)
 
@@ -109,7 +120,7 @@ func DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete category from database
-	err := models.DeleteCategory(database.GetDB(), categoryName)
+	err := models.DeleteCategory(ctx, database.GetDB(), categoryName)
 	if err != nil {
 		// Write error response with internal server error status code
 		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
