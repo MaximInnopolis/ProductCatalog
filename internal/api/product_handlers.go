@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/MaximInnopolis/ProductCatalog/internal/auth"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
@@ -23,11 +22,6 @@ var requestData struct {
 func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	logger.Printf(ctx, "Creating new product")
-
-	// Check if token is valid
-	if !auth.RequireValidToken(w, r) {
-		return
-	}
 
 	// Parse request body to get product data
 	err := json.NewDecoder(r.Body).Decode(&requestData)
@@ -57,11 +51,6 @@ func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 func UpdateProductHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	logger.Printf(ctx, "Updating product")
-
-	// Check if token is valid
-	if !auth.RequireValidToken(w, r) {
-		return
-	}
 
 	// Parse request body to get product data
 	err := json.NewDecoder(r.Body).Decode(&requestData)
@@ -95,11 +84,6 @@ func DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Extract product name from request
 	productName := GetNameFromRequest(r)
-
-	// Check if token is valid
-	if !auth.RequireValidToken(w, r) {
-		return
-	}
 
 	// Delete product from database
 	err := models.DeleteProduct(ctx, database.GetDB(), productName)

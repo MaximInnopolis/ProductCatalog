@@ -1,8 +1,6 @@
 package api
 
 import (
-	"context"
-	"github.com/MaximInnopolis/ProductCatalog/internal/auth"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/gorilla/mux"
 	"log"
@@ -32,20 +30,12 @@ func RegisterHandlers() {
 
 	// Auth router
 	authRouter := router.PathPrefix("/auth").Subrouter()
-	authRouter.HandleFunc("/register", auth.RegisterUserHandler).Methods("POST")
-	authRouter.HandleFunc("/login", auth.LoginUserHandler).Methods("POST")
+	authRouter.HandleFunc("/register", RegisterUserHandler).Methods("POST")
+	authRouter.HandleFunc("/login", LoginUserHandler).Methods("POST")
+
+	router.Use(RequireValidTokenMiddleware)
 
 	// HTTP server start
 	logger.Println("Server started on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
-}
-
-// RequestIDMiddleware assigns endpoint to each request and adds it to the request context
-func RequestIDMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Extract endpoint information from request
-		endpoint := r.URL.Path
-		ctx := context.WithValue(r.Context(), "endpoint", endpoint)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
 }

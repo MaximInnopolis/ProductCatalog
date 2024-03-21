@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/MaximInnopolis/ProductCatalog/internal/auth"
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
@@ -19,11 +18,6 @@ import (
 func CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	logger.Printf(ctx, "Creating new category")
-
-	// Check if token is valid
-	if !auth.RequireValidToken(w, r) {
-		return
-	}
 
 	// Parse request body to get category data
 	var category models.Category
@@ -78,11 +72,6 @@ func UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	// Extract category name from request
 	categoryName := GetNameFromRequest(r)
 
-	// Check if token is valid
-	if !auth.RequireValidToken(w, r) {
-		return
-	}
-
 	// Parse request body to get category data
 	var category models.Category
 	err := json.NewDecoder(r.Body).Decode(&category)
@@ -113,11 +102,6 @@ func DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Printf(ctx, "Deleting category")
 	// Extract category name from request
 	categoryName := GetNameFromRequest(r)
-
-	// Check if token is valid
-	if !auth.RequireValidToken(w, r) {
-		return
-	}
 
 	// Delete category from database
 	err := models.DeleteCategory(ctx, database.GetDB(), categoryName)

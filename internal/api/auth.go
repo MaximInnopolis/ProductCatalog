@@ -1,8 +1,7 @@
-package auth
+package api
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
 
 	"github.com/MaximInnopolis/ProductCatalog/internal/database"
@@ -10,7 +9,6 @@ import (
 	"github.com/MaximInnopolis/ProductCatalog/internal/models"
 
 	"net/http"
-	"strings"
 )
 
 // RegisterUserHandler handles user registration requests
@@ -65,36 +63,4 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Write success message to response
 	utils.WriteTokenJSONResponse(w, http.StatusOK, "Successfully logged in", token)
-}
-
-// RequireValidToken checks if request contains valid authentication token
-// Extracts token from Authorization header and verifies its validity against the database
-// If token is missing or invalid, writes appropriate error response and returns false; otherwise returns true
-func RequireValidToken(w http.ResponseWriter, r *http.Request) bool {
-	ctx := r.Context()
-
-	// Extract token from Authorization header
-	authHeader := r.Header.Get("Authorization")
-	// Check if the Authorization header is missing
-	if authHeader == "" {
-		logger.Printf(ctx, "Authorization header is missing")
-		utils.WriteErrorJSONResponse(w, errors.New("authorization header is missing"), http.StatusInternalServerError)
-		return false
-	}
-	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-
-	// Check if token is valid
-	authenticated, err := models.IsTokenValid(ctx, tokenString)
-	if err != nil {
-		utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
-		return false
-	}
-
-	// If token is not valid, return unauthorized status
-	if !authenticated {
-		utils.WriteErrorJSONResponse(w, errors.New("unauthorized"), http.StatusUnauthorized)
-		return false
-	}
-
-	return true
 }

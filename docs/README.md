@@ -155,11 +155,10 @@ http://localhost:8080/products/ProductName
 │       └── main.go
 ├── /internal
 │   ├── /api
+│   │   ├── auth.go
 │   │   ├── category_handlers.go
 │   │   ├── product_handlers.go
 │   │   └── handlers.go
-│   ├── /auth
-│   │   └── auth.go
 │   ├── /database
 │   │   └── database.go
 │   ├── /logger

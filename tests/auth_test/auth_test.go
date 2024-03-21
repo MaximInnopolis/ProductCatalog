@@ -3,7 +3,7 @@ package auth_test
 import (
 	"database/sql"
 	"errors"
-	"github.com/MaximInnopolis/ProductCatalog/internal/auth"
+	"github.com/MaximInnopolis/ProductCatalog/internal/api"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
 	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
 	"net/http"
@@ -66,7 +66,7 @@ func TestRequireValidToken_Failure(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	// Execute function
-	authenticated := auth.RequireValidToken(rr, req)
+	authenticated := api.RequireValidToken(rr, req)
 
 	// Check if authenticated is false
 	assert.False(t, authenticated)

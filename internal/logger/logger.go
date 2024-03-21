@@ -41,19 +41,13 @@ func Close() error {
 }
 
 func Printf(ctx context.Context, format string, v ...interface{}) {
-	endpoint := getEndpointFromRequest(ctx)
+	endpoint, ok := ctx.Value("endpoint").(string)
+	if !ok {
+		endpoint = "unknown_endpoint"
+	}
 	logger.Printf("[%s] "+format, append([]interface{}{endpoint}, v...)...)
 }
 
 func Println(v ...interface{}) {
 	logger.Println(v...)
-}
-
-// getEndpointFromRequest retrieves the endpoint from the context
-func getEndpointFromRequest(ctx context.Context) string {
-	endpoint, ok := ctx.Value("endpoint").(string)
-	if !ok {
-		return "unknown_endpoint"
-	}
-	return endpoint
 }
