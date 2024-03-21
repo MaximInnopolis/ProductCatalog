@@ -10,8 +10,6 @@ import (
 	"os"
 )
 
-var DBPATH = os.Getenv("DB_PATH")
-
 func main() {
 	// Logger initialization
 	defer func() {
@@ -23,7 +21,7 @@ func main() {
 	// Load env data
 	utils.LoadEnv()
 
-	if err := database.Init(DBPATH); err != nil {
+	if err := database.Init(os.Getenv("DB_PATH")); err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 	defer database.Close()
@@ -34,6 +32,13 @@ func main() {
 	}
 
 	log.Println("Migration completed successfully")
+
+	//// Rollback
+	//if err := scripts.Rollback(database.GetDB()); err != nil {
+	//	log.Fatalf("Failed to rollback: %v", err)
+	//}
+	//
+	//log.Println("Rollback completed successfully")
 
 	// Database records creation (Not necessary)
 	if err := scripts.CreateRecords(database.GetDB()); err != nil {
