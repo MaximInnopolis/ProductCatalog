@@ -125,7 +125,7 @@ func TestCheckTokenValid(t *testing.T) {
 	}
 
 	// Check validity of token
-	valid, err := model.CheckToken(ctx, tokenString)
+	valid, err := model.checkToken(ctx, tokenString)
 	if err != nil {
 		t.Fatalf("Error checking token: %v", err)
 	}

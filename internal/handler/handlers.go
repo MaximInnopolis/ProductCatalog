@@ -19,11 +19,11 @@ func NewHandler(services *service.Service) *Handler {
 // InitRoutes inits HTTP request handlers
 func (h *Handler) InitRoutes(router *mux.Router) {
 	//CRUD category
-	//categoriesRouter := router.PathPrefix("/categories").Subrouter()
-	//categoriesRouter.HandleFunc("/new", CreateCategoryHandler).Methods("POST")      // CREATE
-	//categoriesRouter.HandleFunc("/list", GetCategoriesHandler).Methods("GET")       // READ
-	//categoriesRouter.HandleFunc("/{name}", UpdateCategoryHandler).Methods("PUT")    // UPDATE
-	//categoriesRouter.HandleFunc("/{name}", DeleteCategoryHandler).Methods("DELETE") // DELETE
+	categoriesRouter := router.PathPrefix("/categories").Subrouter()
+	categoriesRouter.HandleFunc("/new", CreateCategoryHandler).Methods("POST")      // CREATE
+	categoriesRouter.HandleFunc("/list", GetCategoriesHandler).Methods("GET")       // READ
+	categoriesRouter.HandleFunc("/{name}", UpdateCategoryHandler).Methods("PUT")    // UPDATE
+	categoriesRouter.HandleFunc("/{name}", DeleteCategoryHandler).Methods("DELETE") // DELETE
 
 	//CRUD product
 	//productsRouter := router.PathPrefix("/products").Subrouter()
@@ -41,8 +41,8 @@ func (h *Handler) InitRoutes(router *mux.Router) {
 func (h *Handler) StartServer() {
 	router := mux.NewRouter()
 	// Middleware for processing request ID
-	router.Use(RequestIDMiddleware)
-	router.Use(RequireValidTokenMiddleware)
+	router.Use(h.RequestIDMiddleware)
+	router.Use(h.RequireValidTokenMiddleware)
 
 	h.InitRoutes(router)
 

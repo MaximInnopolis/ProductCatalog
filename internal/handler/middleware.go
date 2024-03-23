@@ -4,14 +4,13 @@ import (
 	"context"
 	"errors"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
-	"github.com/MaximInnopolis/ProductCatalog/internal/model"
 	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
 	"net/http"
 	"strings"
 )
 
 // RequestIDMiddleware assigns endpoint to each request and adds it to the request context
-func RequestIDMiddleware(next http.Handler) http.Handler {
+func (h *Handler) RequestIDMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Extract endpoint information from request
 		endpoint := r.URL.Path
@@ -23,7 +22,7 @@ func RequestIDMiddleware(next http.Handler) http.Handler {
 // RequireValidTokenMiddleware checks if request contains valid authentication token
 // Extracts token from Authorization header and verifies its validity
 // If token is missing or invalid, writes appropriate error response; otherwise pass further
-func RequireValidTokenMiddleware(next http.Handler) http.Handler {
+func (h *Handler) RequireValidTokenMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -61,7 +60,7 @@ func RequireValidTokenMiddleware(next http.Handler) http.Handler {
 			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
 			// Check if token is valid
-			authenticated, err := model.IsTokenValid(ctx, tokenString)
+			authenticated, err := h.service.IsTokenValid(ctx, tokenString)
 			if err != nil {
 				utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
 				return

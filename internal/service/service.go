@@ -9,6 +9,7 @@ import (
 type Authorization interface {
 	CreateUser(ctx context.Context, user *model.User) error
 	GenerateToken(ctx context.Context, user *model.User) (string, error)
+	IsTokenValid(ctx context.Context, tokenString string) (bool, error)
 }
 
 type Service struct {

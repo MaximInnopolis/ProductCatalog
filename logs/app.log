@@ -1942,3 +1942,7 @@
 [2006-01-02 15:04:05] Server started on port 8080
 [2006-01-02 15:04:05] [/products/Flour] Getting products by category
 [2006-01-02 15:04:05] [/products/Flour] Successfully got products in category Flour
+[2006-01-02 15:04:05] Database connection established
+[2006-01-02 15:04:05] Table 'migrations' created successfully
+[2006-01-02 15:04:05] Migration completed successfully
+[2006-01-02 15:04:05] Server started on port 8080
