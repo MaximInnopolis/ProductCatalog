@@ -146,37 +146,54 @@ http://localhost:8080/products/ProductName
 ```
 /ProductCatalog
 │
-├── .github
+├── /.github
 │   └── workflows
 │       └── main.yaml
+│
 ├── .gitignore
 ├── /cmd
 │   └── /catalog_api_server
 │       └── main.go
+│ 
 ├── /internal
-│   ├── /api
+│   ├── /handler
 │   │   ├── auth.go
 │   │   ├── category_handlers.go
 │   │   ├── product_handlers.go
+│   │   ├── middleware.go
 │   │   └── handlers.go
-│   ├── /database
+│   │
+│   ├── /repository
+│   │   ├── auth_database.go
+│   │   ├── category_database.go
+│   │   ├── product_database.go
+│   │   ├── repository.go
 │   │   └── database.go
+│   │
+│   ├── /service
+│   │   ├── auth.go
+│   │   ├── category.go
+│   │   ├── product.go
+│   │   └── service.go
+│   │
 │   ├── /logger
 │   │   └── logger.go
+│   │
 │   ├── /utils
-│   │   └── response_writer.go
+│   │   ├── response_writer.go
 │   │   └── env_loader.go
-│   └── /models
+│   │
+│   └── /model
 │       ├── category.go
 │       ├── product.go
-│       ├── product_database.go
-│       ├── product_helpers.go
 │       ├── response.go
 │       └── user.go
+│
 ├── /scripts
 │   ├── migrate.go
-│   └── create_records.go
+│   ├── create_records.go
 │   └── data_collection.go
+│
 ├── /tests
 │   ├── /api_test
 │   │   └── handlers_test.go
@@ -186,19 +203,25 @@ http://localhost:8080/products/ProductName
 │   │   └── database_test.go
 │   ├── /models_test
 │   │   ├── category_test.go
-│   │   └── product_test.go
+│   │   ├── product_test.go
 │   │   └── user_test.go
 │   └── /scripts_test
-│       └── migrate_test.go
+│       ├── migrate_test.go
+│       ├── data_collection.go
 │       └── create_records.go
+│
 ├── /docs
-│   └── README.md
+│   ├── Feedback.md
+│   ├── README.md 
+│   └── Task.md
+│
 ├── /data
 │   └── database.db
+│
 ├── go.mod
-└── go.sum
-└── .env
-└── .dockerignore
+├── go.sum
+├── .env
+├── .dockerignore
 └── Dockerfile
 ```
 
