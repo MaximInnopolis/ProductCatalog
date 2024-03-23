@@ -7,13 +7,8 @@ import (
 	"net/http"
 )
 
-// RegisterHandlers registers HTTP request handlers
-func RegisterHandlers() {
-	router := mux.NewRouter()
-
-	// Middleware for processing request ID
-	router.Use(RequestIDMiddleware)
-
+// registerHandlers registers HTTP request handlers
+func registerHandlers(router *mux.Router) {
 	//CRUD category
 	categoriesRouter := router.PathPrefix("/categories").Subrouter()
 	categoriesRouter.HandleFunc("/new", CreateCategoryHandler).Methods("POST")      // CREATE
@@ -32,8 +27,15 @@ func RegisterHandlers() {
 	authRouter := router.PathPrefix("/auth").Subrouter()
 	authRouter.HandleFunc("/register", RegisterUserHandler).Methods("POST")
 	authRouter.HandleFunc("/login", LoginUserHandler).Methods("POST")
+}
 
+func StartServer() {
+	router := mux.NewRouter()
+	// Middleware for processing request ID
+	router.Use(RequestIDMiddleware)
 	router.Use(RequireValidTokenMiddleware)
+
+	registerHandlers(router)
 
 	// HTTP server start
 	logger.Println("Server started on port 8080")

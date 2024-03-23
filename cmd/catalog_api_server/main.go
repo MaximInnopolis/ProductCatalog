@@ -40,16 +40,16 @@ func main() {
 	//
 	//log.Println("Rollback completed successfully")
 
-	// Database records creation (Not necessary)
-	if err := scripts.CreateRecords(database.GetDB()); err != nil {
-		log.Fatalf("Failed to create records: %v", err)
-	}
-
-	logger.Println("Records created successfully")
+	//// Database records creation (Not necessary)
+	//if err := scripts.CreateRecords(database.GetDB()); err != nil {
+	//	log.Fatalf("Failed to create records: %v", err)
+	//}
+	//
+	//logger.Println("Records created successfully")
 
 	// Start data collection
 	scripts.StartDataCollection()
 
 	// Register HTTP request handlers
-	api.RegisterHandlers()
+	api.StartServer()
 }
