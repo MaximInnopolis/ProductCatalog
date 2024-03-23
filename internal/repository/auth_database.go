@@ -42,7 +42,8 @@ func (r *AuthDatabase) CreateUser(ctx context.Context, user *model.User) error {
 // GetUser returns user
 func (r *AuthDatabase) GetUser(ctx context.Context, user *model.User) (*model.User, error) {
 	var dbUser model.User
-	err := r.db.QueryRow("SELECT id, username, password FROM users WHERE username = ?", user.Username).Scan(&dbUser.ID, &dbUser.Username, &dbUser.Password)
+	err := r.db.QueryRow("SELECT id, username, password FROM users WHERE username = ?", user.Username).Scan(
+		&dbUser.ID, &dbUser.Username, &dbUser.Password)
 	if err != nil {
 		logger.Printf(ctx, "Error retrieving user from database: %s", errors.New("not registered yet"))
 		return nil, err

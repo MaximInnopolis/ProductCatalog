@@ -51,7 +51,7 @@ func main() {
 	//logger.Println("Records created successfully")
 
 	// Start data collection
-	scripts.StartDataCollection(db)
+	//scripts.StartDataCollection(db)
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)

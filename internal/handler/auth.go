@@ -27,7 +27,6 @@ func (h *Handler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add user to database
-	//err = models.RegisterUser(ctx, &user)
 	err = h.service.Authorization.CreateUser(ctx, &user)
 	if err != nil {
 		// Write error response with internal server error status code
@@ -54,7 +53,6 @@ func (h *Handler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Login user and generate token
-	//token, err := models.LoginUser(ctx, &user)
 	token, err := h.service.Authorization.GenerateToken(ctx, &user)
 	if err != nil {
 		// Write error response with internal server error status code
