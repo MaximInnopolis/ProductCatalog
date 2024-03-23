@@ -27,5 +27,10 @@ func (p *ProductService) UpdateProduct(ctx context.Context, product *model.Produ
 }
 
 func (p *ProductService) DeleteProduct(ctx context.Context, productName string) error {
-	return p.repo.DeleteProduct(ctx, productName)
+	productID, err := p.repo.GetProductID(ctx, productName)
+	if err != nil {
+		return err
+	}
+
+	return p.repo.DeleteProduct(ctx, productID)
 }

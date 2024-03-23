@@ -185,13 +185,7 @@ func (r *ProductDatabase) UpdateProduct(ctx context.Context, product *model.Prod
 // DeleteProduct deletes specified product from database along with its associated records in 'product_categories' table
 // takes database connection and name of product to be deleted as parameters
 // returns error if any occurred during deletion process
-func (r *ProductDatabase) DeleteProduct(ctx context.Context, productName string) error {
-
-	// Check if product exists in database
-	productID, err := r.GetProductID(ctx, productName)
-	if err != nil {
-		return err
-	}
+func (r *ProductDatabase) DeleteProduct(ctx context.Context, productID int64) error {
 
 	// Delete product from 'products' table
 	query := "DELETE FROM products WHERE id = ?"
@@ -210,7 +204,6 @@ func (r *ProductDatabase) DeleteProduct(ctx context.Context, productName string)
 
 	// If no rows affected, log message indicating that product was not found in database
 	if rowsAffected == 0 {
-		logger.Printf(ctx, "Product %s not found in database", productName)
 		return errors.New("no rows affected, product not found")
 	}
 
@@ -240,7 +233,7 @@ func (r *ProductDatabase) GetProductID(ctx context.Context, productName string) 
 	// Scan product ID from result row into productID variable
 	err := row.Scan(&productID)
 	if err != nil {
-		logger.Printf(ctx, "Product %v does not exist in database.", productName)
+		logger.Printf(ctx, "Product %v not found in database.", productName)
 		return 0, err
 	}
 
