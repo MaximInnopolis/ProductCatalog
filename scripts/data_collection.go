@@ -5,16 +5,15 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"github.com/MaximInnopolis/ProductCatalog/internal/database"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
-	"github.com/MaximInnopolis/ProductCatalog/internal/models"
+	"github.com/MaximInnopolis/ProductCatalog/internal/model"
 	"net/http"
 	"time"
 )
 
 // StartDataCollection starts periodic data collection process to collect data from specified source and save to database
 // sets up ticker to trigger data collection at regular intervals and runs collection process in goroutine
-func StartDataCollection() {
+func StartDataCollection(db *sql.DB) {
 
 	// Set up ticker for collecting data at intervals
 	ticker := time.NewTicker(time.Hour)
@@ -24,7 +23,7 @@ func StartDataCollection() {
 			select {
 			case <-ticker.C:
 				// Collect and save data to database
-				CollectAndSaveProducts(database.GetDB())
+				CollectAndSaveProducts(db)
 			}
 		}
 	}()
@@ -64,11 +63,11 @@ func CollectAndSaveProducts(db *sql.DB) error {
 			return errors.New("category name not found in source")
 		}
 
-		product := models.Product{Name: productName}
-		var category []models.Category
+		product := model.Product{Name: productName}
+		var category []model.Category
 
-		category = append(category, models.Category{Name: categoryName})
-		err = models.AddProduct(ctx, db, &product, category)
+		category = append(category, model.Category{Name: categoryName})
+		err = model.AddProduct(ctx, db, &product, category)
 		if err != nil {
 			continue
 		}

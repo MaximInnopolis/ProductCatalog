@@ -1,4 +1,4 @@
-package models
+package model
 
 // Contains checks if string exists in slice of strings
 func Contains(slice []string, str string) bool {

@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/MaximInnopolis/ProductCatalog/internal/api"
+	"github.com/MaximInnopolis/ProductCatalog/internal/handler"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +19,7 @@ func TestRegisterHandlers(t *testing.T) {
 
 	// Start test server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		api.RegisterHandlers()
+		handler.RegisterHandlers()
 	}))
 	defer server.Close()
 

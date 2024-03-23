@@ -3,7 +3,7 @@ package models_test
 import (
 	"context"
 	"database/sql"
-	"github.com/MaximInnopolis/ProductCatalog/internal/models"
+	"github.com/MaximInnopolis/ProductCatalog/internal/model"
 	"testing"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -23,10 +23,10 @@ func TestAddCategory(t *testing.T) {
 	createCategoryTable(db)
 
 	// Create test category
-	category := &models.Category{Name: "Test Category"}
+	category := &model.Category{Name: "Test Category"}
 
 	// Add category to database
-	categoryID, err := models.AddCategory(ctx, db, category)
+	categoryID, err := model.AddCategory(ctx, db, category)
 	if err != nil {
 		t.Fatalf("Error adding category: %v", err)
 	}
@@ -37,7 +37,7 @@ func TestAddCategory(t *testing.T) {
 	}
 
 	// Retrieve all categories from database
-	categories, err := models.GetAllCategories(ctx, db)
+	categories, err := model.GetAllCategories(ctx, db)
 	if err != nil {
 		t.Fatalf("Error retrieving categories: %v", err)
 	}
@@ -69,23 +69,23 @@ func TestUpdateCategory(t *testing.T) {
 	createCategoryTable(db)
 
 	// Create new category
-	category := &models.Category{Name: "Test Category"}
+	category := &model.Category{Name: "Test Category"}
 
 	// Add category to database
-	_, err = models.AddCategory(ctx, db, category)
+	_, err = model.AddCategory(ctx, db, category)
 	if err != nil {
 		t.Fatalf("Error adding category: %v", err)
 	}
 
 	// Update category name
 	newCategoryName := "Updated Category"
-	err = models.UpdateCategory(ctx, db, category.Name, &models.Category{Name: newCategoryName})
+	err = model.UpdateCategory(ctx, db, category.Name, &model.Category{Name: newCategoryName})
 	if err != nil {
 		t.Fatalf("Error updating category: %v", err)
 	}
 
 	// Retrieve all categories from database
-	categories, err := models.GetAllCategories(ctx, db)
+	categories, err := model.GetAllCategories(ctx, db)
 	if err != nil {
 		t.Fatalf("Error retrieving categories: %v", err)
 	}
@@ -117,22 +117,22 @@ func TestDeleteCategory(t *testing.T) {
 	createCategoryTable(db)
 
 	// Create new category
-	category := &models.Category{Name: "Test Category"}
+	category := &model.Category{Name: "Test Category"}
 
 	// Add category to database
-	_, err = models.AddCategory(ctx, db, category)
+	_, err = model.AddCategory(ctx, db, category)
 	if err != nil {
 		t.Fatalf("Error adding category: %v", err)
 	}
 
 	// Delete category from database
-	err = models.DeleteCategory(ctx, db, category.Name)
+	err = model.DeleteCategory(ctx, db, category.Name)
 	if err != nil {
 		t.Fatalf("Error deleting category: %v", err)
 	}
 
 	// Retrieve all categories from database
-	categories, err := models.GetAllCategories(ctx, db)
+	categories, err := model.GetAllCategories(ctx, db)
 	if err != nil {
 		t.Fatalf("Error retrieving categories: %v", err)
 	}

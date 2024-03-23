@@ -1,10 +1,10 @@
-package api
+package handler
 
 import (
 	"context"
 	"errors"
 	"github.com/MaximInnopolis/ProductCatalog/internal/logger"
-	"github.com/MaximInnopolis/ProductCatalog/internal/models"
+	"github.com/MaximInnopolis/ProductCatalog/internal/model"
 	"github.com/MaximInnopolis/ProductCatalog/internal/utils"
 	"net/http"
 	"strings"
@@ -61,7 +61,7 @@ func RequireValidTokenMiddleware(next http.Handler) http.Handler {
 			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
 			// Check if token is valid
-			authenticated, err := models.IsTokenValid(ctx, tokenString)
+			authenticated, err := model.IsTokenValid(ctx, tokenString)
 			if err != nil {
 				utils.WriteErrorJSONResponse(w, err, http.StatusInternalServerError)
 				return
