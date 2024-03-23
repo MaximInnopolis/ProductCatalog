@@ -51,10 +51,10 @@ func main() {
 	//logger.Println("Records created successfully")
 
 	// Start data collection
-	//scripts.StartDataCollection(db)
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
+	scripts.StartDataCollection(services)
 
 	// Register HTTP request handlers
 	handlers.StartServer()
