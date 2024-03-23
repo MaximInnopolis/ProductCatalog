@@ -19,14 +19,23 @@ type Category interface {
 	DeleteCategory(ctx context.Context, categoryName string) error
 }
 
+type Product interface {
+	CreateProduct(ctx context.Context, product *model.Product, categories []model.Category) error
+	GetProductsByCategory(ctx context.Context, categoryName string) ([]string, error)
+	UpdateProduct(ctx context.Context, product *model.Product, categories []model.Category) error
+	DeleteProduct(ctx context.Context, productName string) error
+}
+
 type Service struct {
 	Authorization
 	Category
+	Product
 }
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
 		Category:      NewCategoryService(repos.Category),
+		Product:       NewProductService(repos.Product),
 	}
 }

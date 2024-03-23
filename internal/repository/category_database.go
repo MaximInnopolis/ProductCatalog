@@ -12,9 +12,13 @@ type CategoryDatabase struct {
 	db *sql.DB
 }
 
+func NewCategoryDatabase(db *sql.DB) *CategoryDatabase {
+	return &CategoryDatabase{db: db}
+}
+
 // CreateCategory inserts new category into database using provided DB connection
 // Returns ID of newly inserted category and any error encountered
-func (r CategoryDatabase) CreateCategory(ctx context.Context, category *model.Category) (int64, error) {
+func (r *CategoryDatabase) CreateCategory(ctx context.Context, category *model.Category) (int64, error) {
 	query := "INSERT INTO categories (name) VALUES (?)"
 	result, err := r.db.Exec(query, category.Name)
 	if err != nil {
@@ -35,7 +39,7 @@ func (r CategoryDatabase) CreateCategory(ctx context.Context, category *model.Ca
 
 // GetAllCategories retrieves all existing categories from database using provided DB connection
 // Returns slice of strings containing names of all categories and any error encountered
-func (r CategoryDatabase) GetAllCategories(ctx context.Context) ([]string, error) {
+func (r *CategoryDatabase) GetAllCategories(ctx context.Context) ([]string, error) {
 	// Execute SELECT query to retrieve all category names from database
 	query := "SELECT name FROM categories"
 	rows, err := r.db.Query(query)
@@ -72,7 +76,7 @@ func (r CategoryDatabase) GetAllCategories(ctx context.Context) ([]string, error
 // UpdateCategory edits existing category in database with specified name
 // Takes database connection, current category name, and updated category information as parameters
 // Returns error if any occurred during update process
-func (r CategoryDatabase) UpdateCategory(ctx context.Context, categoryName string, category *model.Category) error {
+func (r *CategoryDatabase) UpdateCategory(ctx context.Context, categoryName string, category *model.Category) error {
 	// Execute UPDATE query to update category name in database
 	query := "UPDATE categories SET name = ? WHERE name = ?"
 	result, err := r.db.Exec(query, category.Name, categoryName)
@@ -102,7 +106,7 @@ func (r CategoryDatabase) UpdateCategory(ctx context.Context, categoryName strin
 // DeleteCategory deletes specified category from database
 // Takes database connection and name of category to be deleted as parameters
 // Returns error if any occurred during deletion process
-func (r CategoryDatabase) DeleteCategory(ctx context.Context, categoryName string) error {
+func (r *CategoryDatabase) DeleteCategory(ctx context.Context, categoryName string) error {
 	// Execute DELETE query to delete category from database
 	query := "DELETE FROM categories WHERE name = ?"
 	result, err := r.db.Exec(query, categoryName)
@@ -130,6 +134,24 @@ func (r CategoryDatabase) DeleteCategory(ctx context.Context, categoryName strin
 	return nil
 }
 
-func NewCategoryDatabase(db *sql.DB) *CategoryDatabase {
-	return &CategoryDatabase{db: db}
+// GetCategoryID retrieves ID of category with specified name from database
+// takes database connection and category name as parameters
+// returns category ID and any error encountered
+func (r *CategoryDatabase) GetCategoryID(ctx context.Context, categoryName string) (int64, error) {
+	// Construct SQL query to select category ID based on category name
+	query := "SELECT id FROM categories WHERE name = ?"
+	// Execute query and retrieve single row result
+	row := r.db.QueryRow(query, categoryName)
+
+	// Initialize variable to store category ID
+	var categoryID int64
+	// Scan category ID from result row into categoryID variable
+	err := row.Scan(&categoryID)
+	if err != nil {
+		logger.Printf(ctx, "Category %v does not exist in database yet. Creating...", categoryName)
+		return 0, err
+	}
+
+	// Return retrieved category ID and nil error, indicating success
+	return categoryID, nil
 }

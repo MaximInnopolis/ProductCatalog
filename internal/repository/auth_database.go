@@ -13,6 +13,10 @@ type AuthDatabase struct {
 	db *sql.DB
 }
 
+func NewAuthDatabase(db *sql.DB) *AuthDatabase {
+	return &AuthDatabase{db: db}
+}
+
 // CreateUser create new user in database
 func (r *AuthDatabase) CreateUser(ctx context.Context, user *model.User) error {
 	// Check if username already exists
@@ -56,8 +60,4 @@ func (r *AuthDatabase) GetUser(ctx context.Context, user *model.User) (*model.Us
 	}
 
 	return &dbUser, nil
-}
-
-func NewAuthDatabase(db *sql.DB) *AuthDatabase {
-	return &AuthDatabase{db: db}
 }

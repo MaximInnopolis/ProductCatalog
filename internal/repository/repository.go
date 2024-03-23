@@ -18,14 +18,24 @@ type Category interface {
 	DeleteCategory(ctx context.Context, categoryName string) error
 }
 
+type Product interface {
+	CreateProduct(ctx context.Context, product *model.Product, categories []model.Category) error
+	GetProductsByCategory(ctx context.Context, categoryName string) ([]string, error)
+	UpdateProduct(ctx context.Context, product *model.Product, categories []model.Category) error
+	DeleteProduct(ctx context.Context, productName string) error
+	GetCategoryID(ctx context.Context, categoryName string) (int64, error)
+}
+
 type Repository struct {
 	Authorization
 	Category
+	Product
 }
 
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthDatabase(db),
 		Category:      NewCategoryDatabase(db),
+		Product:       NewProductDatabase(db),
 	}
 }

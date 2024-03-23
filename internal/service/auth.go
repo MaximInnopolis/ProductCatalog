@@ -17,6 +17,10 @@ type AuthService struct {
 	repo repository.Authorization
 }
 
+func NewAuthService(repo repository.Authorization) *AuthService {
+	return &AuthService{repo: repo}
+}
+
 func (s *AuthService) CreateUser(ctx context.Context, user *model.User) error {
 	var err error
 	user.Password, err = generatePasswordHash(user.Password)
@@ -88,10 +92,6 @@ func checkToken(ctx context.Context, tokenString string) (bool, error) {
 	}
 
 	return true, nil
-}
-
-func NewAuthService(repo repository.Authorization) *AuthService {
-	return &AuthService{repo: repo}
 }
 
 // generateJWT generates JWT token for user with additional claims

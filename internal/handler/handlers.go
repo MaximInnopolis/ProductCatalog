@@ -20,7 +20,7 @@ func NewHandler(services *service.Service) *Handler {
 func (h *Handler) InitRoutes(router *mux.Router) {
 	//CRUD category
 	categoriesRouter := router.PathPrefix("/categories").Subrouter()
-	categoriesRouter.HandleFunc("/list", h.GetCategoriesHandler).Methods("GET")
+	categoriesRouter.HandleFunc("/list", h.GetCategoriesHandler).Methods("GET") // READ
 
 	createCategoryHandler := http.HandlerFunc(h.CreateCategoryHandler)
 	categoriesRouter.Handle("/new", h.RequireValidTokenMiddleware(createCategoryHandler)).Methods("POST")
@@ -32,11 +32,17 @@ func (h *Handler) InitRoutes(router *mux.Router) {
 	categoriesRouter.Handle("/{name}", h.RequireValidTokenMiddleware(deleteCategoryHandler)).Methods("DELETE")
 
 	//CRUD product
-	//productsRouter := router.PathPrefix("/products").Subrouter()
-	//productsRouter.HandleFunc("/new", CreateProductHandler).Methods("POST")           // CREATE
-	//productsRouter.HandleFunc("/{name}", GetProductsByCategoryHandler).Methods("GET") // READ
-	//productsRouter.HandleFunc("", UpdateProductHandler).Methods("PUT")                // UPDATE
-	//productsRouter.HandleFunc("/{name}", DeleteProductHandler).Methods("DELETE")      // DELETE
+	productsRouter := router.PathPrefix("/products").Subrouter()
+	productsRouter.HandleFunc("/{name}", h.GetProductsByCategoryHandler).Methods("GET") // READ
+
+	createProductHandler := http.HandlerFunc(h.CreateProductHandler)
+	productsRouter.Handle("/new", h.RequireValidTokenMiddleware(createProductHandler)).Methods("POST")
+
+	updateProductHandler := http.HandlerFunc(h.UpdateProductHandler)
+	productsRouter.Handle("/", h.RequireValidTokenMiddleware(updateProductHandler)).Methods("PUT")
+
+	deleteProductHandler := http.HandlerFunc(h.DeleteProductHandler)
+	productsRouter.Handle("/{name}", h.RequireValidTokenMiddleware(deleteProductHandler)).Methods("DELETE")
 
 	// Auth router
 	authRouter := router.PathPrefix("/auth").Subrouter()
