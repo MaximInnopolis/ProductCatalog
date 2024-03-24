@@ -13,14 +13,17 @@ import (
 	"time"
 )
 
+// AuthService provides authentication-related functionalities
 type AuthService struct {
 	repo repository.Authorization
 }
 
+// NewAuthService creates new instance of AuthService
 func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
+// CreateUser creates new user with hashed password
 func (s *AuthService) CreateUser(ctx context.Context, user *model.User) error {
 	var err error
 	user.Password, err = generatePasswordHash(user.Password)
@@ -30,6 +33,7 @@ func (s *AuthService) CreateUser(ctx context.Context, user *model.User) error {
 	return s.repo.CreateUser(ctx, user)
 }
 
+// GenerateToken generates JWT token for user
 func (s *AuthService) GenerateToken(ctx context.Context, user *model.User) (string, error) {
 	dbUser, err := s.repo.GetUser(ctx, user)
 	if err != nil {
@@ -60,6 +64,7 @@ func (s *AuthService) IsTokenValid(ctx context.Context, tokenString string) (boo
 	return true, nil
 }
 
+// checkToken checks if JWT token is valid.
 func checkToken(ctx context.Context, tokenString string) (bool, error) {
 	// Parse token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -115,6 +120,7 @@ func generateJWT(user *model.User) (string, error) {
 	return tokenString, nil
 }
 
+// generatePasswordHash generates hashed password
 func generatePasswordHash(password string) (string, error) {
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

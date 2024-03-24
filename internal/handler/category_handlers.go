@@ -10,8 +10,7 @@ import (
 )
 
 // CreateCategoryHandler handles requests to create new category
-// First checks if token is valid
-// Then parses request body to extract category data
+// Parses request body to extract category data
 // If successful, adds category to database and writes success message to response
 // If any errors occur, writes error response
 func (h *Handler) CreateCategoryHandler(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +60,7 @@ func (h *Handler) GetCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateCategoryHandler handles requests to update existing category
-// Extracts category name from request and checks if token is valid
+// Extracts category name from request
 // If successful, parses request body to get category data and updates category in database
 // If any errors occur during process, writes error response
 func (h *Handler) UpdateCategoryHandler(w http.ResponseWriter, r *http.Request) {

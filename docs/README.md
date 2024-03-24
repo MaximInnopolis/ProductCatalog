@@ -219,10 +219,13 @@ http://localhost:8080/products/ProductName
 │   ├── /handler
 │   │   ├── auth_test.go
 │   │   └── middleware_test.go
-│   └── /repository
-│       ├── auth_test.go
-│       ├── category_test.go
-│       └── database_test.go
+│   ├── /repository
+│   │   ├── auth_test.go
+│   │   ├── category_test.go
+│   │   └── database_test.go
+│   └──/scripts
+│      ├── create_records_test.go
+│      └── migrate_test.go
 │
 ├── /docs
 │   ├── Feedback.md

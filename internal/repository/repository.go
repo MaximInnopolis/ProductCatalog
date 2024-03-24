@@ -6,11 +6,13 @@ import (
 	"github.com/MaximInnopolis/ProductCatalog/internal/model"
 )
 
+// Authorization interface defines methods for user authorization
 type Authorization interface {
 	CreateUser(ctx context.Context, user *model.User) error
 	GetUser(ctx context.Context, user *model.User) (*model.User, error)
 }
 
+// Category interface defines methods for category management
 type Category interface {
 	CreateCategory(ctx context.Context, category *model.Category) (int64, error)
 	GetAllCategories(ctx context.Context) ([]string, error)
@@ -18,6 +20,7 @@ type Category interface {
 	DeleteCategory(ctx context.Context, categoryName string) error
 }
 
+// Product interface defines methods for product management
 type Product interface {
 	CreateProduct(ctx context.Context, product *model.Product, categories []model.Category) error
 	GetProductsByCategory(ctx context.Context, categoryName string) ([]string, error)
@@ -33,6 +36,7 @@ type Repository struct {
 	Product
 }
 
+// NewRepository creates new repository with given database connection
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthDatabase(db),
