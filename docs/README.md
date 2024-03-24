@@ -216,20 +216,13 @@ http://localhost:8080/products/ProductName
 │   └── data_collection.go
 │
 ├── /tests
-│   ├── /api_test
-│   │   └── handlers_test.go
-│   ├── /auth_test
-│   │   └── auth_test.go
-│   ├── /database
-│   │   └── database_test.go
-│   ├── /models_test
-│   │   ├── category_test.go
-│   │   ├── product_test.go
-│   │   └── user_test.go
-│   └── /scripts_test
-│       ├── migrate_test.go
-│       ├── data_collection.go
-│       └── create_records.go
+│   ├── /handler
+│   │   ├── auth_test.go
+│   │   └── middleware_test.go
+│   └── /repository
+│       ├── auth_test.go
+│       ├── category_test.go
+│       └── database_test.go
 │
 ├── /docs
 │   ├── Feedback.md
@@ -243,6 +236,7 @@ http://localhost:8080/products/ProductName
 ├── go.sum
 ├── .env
 ├── .dockerignore
+├── http_requests.http
 └── Dockerfile
 ```
 
