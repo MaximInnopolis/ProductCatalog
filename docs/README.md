@@ -22,14 +22,14 @@ go run ./cmd/catalog_api_server/main.go
    Выполните команду для загрузки образа проекта из Docker Hub:
 
    ```bash
-   docker pull madfisher/catalog-api:latest
+   docker pull madfisher/catalog-api:tag
     ```
 2. **Запуск контейнера:**
 
    Выполните команду для запуска контейнера из загруженного образа:
 
    ```bash
-    docker run -d -p 8080:8080 madfisher/catalog-api:latest
+    docker run -d -p 8080:8080 madfisher/catalog-api:tag
     ```
    Где:
    1. `-d`: запуск контейнера в фоновом режиме.
