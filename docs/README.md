@@ -145,7 +145,7 @@ http://localhost:8080/products/new
 
 #### Обновить товар
 ```bash
-curl -X POST \
+curl -X PUT \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer YOUR_TOKEN" \
 -d '{"Name": "Product Name", "Category": "Category Name"}' \
