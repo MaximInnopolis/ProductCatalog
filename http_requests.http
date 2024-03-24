@@ -1,0 +1,76 @@
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "exampleuser",
+  "password": "examplepassword"
+}
+
+###
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "exampleuser",
+  "password": "examplepassword"
+}
+
+###
+GET http://localhost:8080/categories/list
+
+###
+POST http://localhost:8080/categories/new
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTEzODQzNzAsImlkIjoxLCJzdWIiOiJleGFtcGxldXNlciJ9.8VgIu0YGj7zg6Wzb-QD1hd8AMTHMykLaBBqV27oTCaA
+
+{
+  "Name": "New Category Name"
+}
+
+###
+PUT http://localhost:8080/categories/CategoryName
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTEzODQzNzAsImlkIjoxLCJzdWIiOiJleGFtcGxldXNlciJ9.8VgIu0YGj7zg6Wzb-QD1hd8AMTHMykLaBBqV27oTCaA
+
+{
+  "Name": "New Category Name"
+}
+
+###
+DELETE http://localhost:8080/categories/CategoryName
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTEzODQzNzAsImlkIjoxLCJzdWIiOiJleGFtcGxldXNlciJ9.8VgIu0YGj7zg6Wzb-QD1hd8AMTHMykLaBBqV27oTCaA
+
+###
+GET http://localhost:8080/products/CategoryName
+
+###
+POST http://localhost:8080/products/new
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTEzODQzNzAsImlkIjoxLCJzdWIiOiJleGFtcGxldXNlciJ9.8VgIu0YGj7zg6Wzb-QD1hd8AMTHMykLaBBqV27oTCaA
+
+{
+  "Name": "New Product Name",
+  "Categories": [
+    {"Name": "Fish"},
+    {"Name": "Meat"}
+  ]
+}
+
+###
+PUT http://localhost:8080/products/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTEzODQzNzAsImlkIjoxLCJzdWIiOiJleGFtcGxldXNlciJ9.8VgIu0YGj7zg6Wzb-QD1hd8AMTHMykLaBBqV27oTCaA
+
+{
+  "Name": "New Product Name",
+  "Categories": [
+    {"Name": "Milk"},
+    {"Name": "Flour"}
+  ]
+}
+
+###
+DELETE http://localhost:8080/products/ProductName
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTEzODQzNzAsImlkIjoxLCJzdWIiOiJleGFtcGxldXNlciJ9.8VgIu0YGj7zg6Wzb-QD1hd8AMTHMykLaBBqV27oTCaA
